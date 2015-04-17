@@ -276,6 +276,7 @@ begin
   if u.HasDescription then
     WriteDirectLine(space + ItemDescription(u));
   //global uses
+    if WriteUsesClause and not IsEmpty(U.UsesUnits) then
     for i:=0 to u.UsesUnits.count-1 do
       WriteDirectLine(space +
         '<uses name="' + ConvertString(u.UsesUnits[i]) + '"/>');
