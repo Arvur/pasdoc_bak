@@ -1,0 +1,58 @@
+- We should store filenames like Lazarus files:
+  - property in ini file for FilePathDelim
+  - when reading we 1st read FilePathDelim,
+    then in all filenames we replace FilePathDelim with current PathDelim.
+  - when writing we set FilePathDelim to current PathDelim
+
+  Add then to [http://pasdoc.sipsolutions.net/PasDocGui] text like
+
+Moreover, as long as you will keep ''Store relative paths in project file'' option checked, you can freely open and save the same *.pds file using any OS. E.g. you can create and save {{{test.pds}}} using Linux version of pasdoc_gui, then switch to Windows and open the same {{{test.pds}}} file using Windows version of pasdoc_gui, etc.
+
+- GraphViz improvements:
+  - There must be a way to specify file extension
+    (e.g. there *must* be a way to differ between svg and png formats;
+    not to mention that there *should* be a way to differ between various
+    pixel-based image formats).
+
+  - Also for command-line pasdoc:
+    By default dot should be automatically run by pasdoc component,
+    although there should be a way to turn it off.
+    It would be also nice to have a way to let pasdoc component
+    automatically call dot but at the same time change some
+    dot's command-line options (e.g. force "-Grankdir=LR").
+
+    Last possibility could be used by pasdoc_gui to provide
+    some GUI controls that affect generated command-line
+    options passed to dot. E.g. pasdoc_gui could provide
+    TRadioBox to control "-Grankdir=LR|RL|BT" option for dot.
+
+  - Also for command-line pasdoc:
+    See also requests about using client-side image map generated
+    by "dot", see [http://pasdoc.sipsolutions.net/WantedFeatures].
+
+- When we will learn how to generate nice offline documentation
+  from our moinmoin wiki and we will distribute pasdoc + pasdoc_gui +
+  offline docs in one package, this will fire up WWW browser
+  with a local HTML page (still, configuration option will
+  be added to allow users who are always online to see the latest
+  version of documentation from WWW, instead of looking at offline
+  version).
+
+- pasdoc_gui should allow user to configure default state of "Defines".
+  Actually, it should allow user to configure default state of *all* options.
+  E.g. maybe someone always wants to make default language of docs = Polish ?
+  Maybe someone wants default verbosity = 6 ?
+  Maybe someone has some include directory with his include files that
+  he wants to always be added to "Include dirs" by default ?
+  This can all be very nicely solved by storing some "default project settings"
+  in user's directory and loading it on program start (and menu "New" execution).
+  Then the code that currently loads contents from Ini file can be modified
+  to actually have really good default values, and instead of using "SetDefaults"
+  we simply load from a file where "default project settings" for this user
+  are stored (like ~/.pasdoc_gui/default.pds on Unixes)
+
+- ButtonAspellURL and ButtonGraphVizURL and ButtonPasdocURL should be changed to
+  have blue and underlined font and cursor crHand.
+  Maybe also turn them into labels.
+  This seems not possible now (with Lazarus 0.9.10 on GTK interface),
+  for now normal buttons look best.

@@ -1,0 +1,1710 @@
+object frmHelpGenerator: TfrmHelpGenerator
+  Left = 471
+  Height = 566
+  Top = 142
+  Width = 777
+  HelpType = htKeyword
+  HelpKeyword = 'PasDocGui'
+  HorzScrollBar.Page = 739
+  VertScrollBar.Page = 415
+  ActiveControl = PanelLeft
+  AutoSize = True
+  Caption = 'pasdoc gui'
+  ClientHeight = 533
+  ClientWidth = 777
+  Font.Height = -16
+  Font.Name = 'MS Sans Serif'
+  KeyPreview = True
+  Menu = MainMenu1
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
+  Position = poScreenCenter
+  ShowHint = True
+  LCLVersion = '1.0.10.0'
+  object NotebookMain: TNotebook
+    Left = 208
+    Height = 533
+    Top = 0
+    Width = 569
+    PageIndex = 0
+    Align = alClient
+    TabOrder = 0
+    TabStop = True
+    object pageOptions: TPage
+      Hint = 'Options'
+      object LabelTitle: TLabel
+        Left = 8
+        Height = 20
+        Top = 8
+        Width = 31
+        HelpType = htKeyword
+        Caption = 'Title'
+        FocusControl = edTitle
+        ParentColor = False
+      end
+      object LabelOutputType: TLabel
+        AnchorSideTop.Control = edTitle
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 20
+        Top = 57
+        Width = 96
+        HelpType = htKeyword
+        Caption = 'Output Type'
+        FocusControl = comboGenerateFormat
+        ParentColor = False
+      end
+      object LabelProjectName: TLabel
+        AnchorSideTop.Control = EditOutputDirectory
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 20
+        Top = 165
+        Width = 387
+        HelpType = htKeyword
+        Caption = 'Output filename (without directory; not for HTML)'
+        FocusControl = edProjectName
+        ParentColor = False
+      end
+      object LabelLanguages: TLabel
+        AnchorSideTop.Control = edProjectName
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 20
+        Top = 214
+        Width = 77
+        HelpType = htKeyword
+        Caption = 'Language'
+        FocusControl = comboLanguages
+        ParentColor = False
+      end
+      object LabelOutputDirectory: TLabel
+        AnchorSideTop.Control = comboGenerateFormat
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 20
+        Top = 116
+        Width = 131
+        HelpType = htKeyword
+        Caption = 'Output directory'
+        ParentColor = False
+      end
+      object CheckAutoAbstract: TCheckBox
+        AnchorSideTop.Control = CheckUseTipueSearch
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 29
+        Hint = 'If this is checked, the 1st sentence of each description'#10'will be treated as the abstract of that description'#10'(unless you override it by using the @abstract tag).'
+        Top = 331
+        Width = 665
+        HelpType = htKeyword
+        HelpKeyword = 'AutoAbstractOption'
+        Caption = 'Automatically deduce @abstract description from the 1st sentence of description'
+        OnChange = SomethingChanged
+        TabOrder = 0
+      end
+      object CheckUseTipueSearch: TCheckBox
+        AnchorSideTop.Control = CheckWriteUsesList
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 29
+        Hint = 'Check this to get working "Search" button in your HTML documentation.'
+        Top = 302
+        Width = 336
+        HelpType = htKeyword
+        HelpKeyword = 'UseTipueSearchOption'
+        Caption = 'Use tipue search engine in HTML output'
+        OnChange = SomethingChanged
+        TabOrder = 1
+      end
+      object edTitle: TEdit
+        AnchorSideTop.Control = LabelTitle
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 29
+        Hint = 'Title for your documentation. In HTML output, this appears in the web browser caption.'
+        Top = 28
+        Width = 274
+        HelpType = htKeyword
+        HelpKeyword = 'DocumentationTitle'
+        OnChange = SomethingChanged
+        TabOrder = 2
+      end
+      object comboGenerateFormat: TComboBox
+        AnchorSideTop.Control = LabelOutputType
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 39
+        Top = 77
+        Width = 254
+        HelpType = htKeyword
+        ItemHeight = 0
+        Items.Strings = (
+          'HTML'
+          'HTML Help Workshop'
+          'LaTeX'
+          'LaTeX for latex2rtf'
+        )
+        OnChange = comboGenerateFormatChange
+        Style = csDropDownList
+        TabOrder = 3
+      end
+      object edProjectName: TEdit
+        AnchorSideTop.Control = LabelProjectName
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 29
+        Hint = 'The project name is used to specify the main part of '#10'the output file name for HtmlHelp or LaTeX output.'
+        Top = 185
+        Width = 274
+        HelpType = htKeyword
+        HelpKeyword = 'NameOption'
+        OnChange = SomethingChanged
+        TabOrder = 4
+      end
+      object comboLanguages: TComboBox
+        AnchorSideTop.Control = LabelLanguages
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 39
+        Top = 234
+        Width = 258
+        HelpType = htKeyword
+        HelpKeyword = 'OutputLanguage'
+        Anchors = [akTop, akLeft, akRight]
+        ItemHeight = 0
+        OnChange = comboLanguagesChange
+        Style = csDropDownList
+        TabOrder = 5
+      end
+      object CheckAutoLink: TCheckBox
+        AnchorSideTop.Control = CheckAutoAbstract
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 29
+        Top = 360
+        Width = 580
+        HelpType = htKeyword
+        HelpKeyword = 'AutoLinkOption'
+        Caption = 'Automatically turn identifiers into links, without the need for @link tag'
+        OnChange = SomethingChanged
+        TabOrder = 7
+      end
+      object CheckHandleMacros: TCheckBox
+        AnchorSideTop.Control = CheckAutoLink
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 29
+        Top = 389
+        Width = 369
+        HelpType = htKeyword
+        HelpKeyword = 'NoMacroOption'
+        Caption = 'Recognize FPC macros syntax when parsing'
+        Checked = True
+        OnChange = SomethingChanged
+        State = cbChecked
+        TabOrder = 6
+      end
+      object CheckStoreRelativePaths: TCheckBox
+        AnchorSideTop.Control = CheckHandleMacros
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 29
+        Top = 418
+        Width = 327
+        HelpType = htKeyword
+        HelpKeyword = 'PasDocGui/StoreRelativePaths'
+        Caption = 'Store only relative paths in project file'
+        Checked = True
+        OnChange = SomethingChanged
+        State = cbChecked
+        TabOrder = 8
+      end
+      object CheckWriteUsesList: TCheckBox
+        AnchorSideTop.Control = comboLanguages
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 29
+        Top = 273
+        Width = 182
+        HelpType = htKeyword
+        HelpKeyword = 'WriteUsesList'
+        Caption = 'Show units uses list'
+        OnChange = SomethingChanged
+        TabOrder = 9
+      end
+      object EditOutputDirectory: TDirectoryEdit
+        AnchorSideTop.Control = LabelOutputDirectory
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 29
+        Top = 136
+        Width = 483
+        HelpType = htKeyword
+        HelpKeyword = 'OutputOption'
+        DialogTitle = 'Select output directory'
+        ShowHidden = False
+        ButtonWidth = 23
+        NumGlyphs = 1
+        MaxLength = 0
+        TabOrder = 10
+        OnChange = SomethingChanged
+      end
+    end
+    object pageSourceFiles: TPage
+      Hint = 'Source Files'
+      object Label8: TLabel
+        Left = 8
+        Height = 160
+        Top = 8
+        Width = 547
+        HelpType = htKeyword
+        Align = alCustom
+        Anchors = [akTop, akLeft, akRight]
+        Caption = 'Add the filenames of source files you wish to include in your project. The directories for each file will be automatically added to the "Include" directories if you use the "Browse" button to add the source files.'
+        FocusControl = memoFiles
+        ParentColor = False
+        WordWrap = True
+      end
+      object memoFiles: TMemo
+        AnchorSideTop.Control = btnBrowseSourceFiles
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 257
+        Top = 225
+        Width = 547
+        HelpType = htKeyword
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        BorderSpacing.Around = 10
+        OnChange = SomethingChanged
+        ScrollBars = ssBoth
+        TabOrder = 0
+        WordWrap = False
+      end
+      object btnBrowseSourceFiles: TButton
+        AnchorSideTop.Control = Label8
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 47
+        Top = 168
+        Width = 547
+        Align = alCustom
+        Anchors = [akTop, akLeft, akRight]
+        AutoSize = True
+        BorderSpacing.InnerBorder = 4
+        Caption = 'Browse'
+        OnClick = btnBrowseSourceFilesClick
+        TabOrder = 1
+      end
+    end
+    object pageIncludeDirectories: TPage
+      Hint = 'Include Directories'
+      object PanelIncludeDirectoriesTop: TPanel
+        Left = 0
+        Height = 151
+        Top = 0
+        Width = 563
+        Align = alTop
+        AutoSize = True
+        BevelOuter = bvNone
+        BorderWidth = 10
+        ClientHeight = 151
+        ClientWidth = 563
+        FullRepaint = False
+        TabOrder = 1
+        object Label9: TLabel
+          Left = 10
+          Height = 94
+          Top = 10
+          Width = 543
+          HelpType = htKeyword
+          Align = alTop
+          Caption = 'The directories where PasDoc can find include files.'#10'(If you use $I, $INCLUDE compiler directives.)'
+          FocusControl = memoIncludeDirectories
+          ParentColor = False
+          WordWrap = True
+        end
+        object btnBrowseIncludeDirectory: TButton
+          Left = 10
+          Height = 47
+          Top = 104
+          Width = 543
+          Align = alTop
+          AutoSize = True
+          BorderSpacing.InnerBorder = 4
+          Caption = 'Browse'
+          OnClick = btnBrowseIncludeDirectoryClick
+          TabOrder = 0
+        end
+      end
+      object memoIncludeDirectories: TMemo
+        Left = 10
+        Height = 321
+        Top = 161
+        Width = 543
+        HelpType = htKeyword
+        HelpKeyword = 'IncludeInSearchPath'
+        Align = alClient
+        BorderSpacing.Around = 10
+        OnChange = SomethingChanged
+        ScrollBars = ssBoth
+        TabOrder = 0
+        WordWrap = False
+      end
+    end
+    object pageDefines: TPage
+      Hint = 'Defines'
+      object Label12: TLabel
+        Left = 10
+        Height = 325
+        Top = 10
+        Width = 543
+        Align = alTop
+        BorderSpacing.Around = 10
+        Caption = 'Put here any symbols that you want to have defined at the start, just as if they would be defined by $DEFINE at the beginning of each unit.'#10#10'Note that your compiler may define some symbols by default (for example, "FPC" by FreePascal, "VER150" by Delphi 7, target OS and architecture like "UNIX", "MSWINDOWS" etc.) --- you may want to define some of these for pasdoc too.'
+        FocusControl = memoDefines
+        ParentColor = False
+        WordWrap = True
+      end
+      object memoDefines: TMemo
+        Left = 10
+        Height = 137
+        Top = 345
+        Width = 543
+        HelpType = htKeyword
+        HelpKeyword = 'ConditionalDefines'
+        Align = alClient
+        BorderSpacing.Around = 10
+        OnChange = SomethingChanged
+        ScrollBars = ssBoth
+        TabOrder = 0
+        WordWrap = False
+      end
+    end
+    object PageVisibleMembers: TPage
+      Hint = 'Visible members'
+      ChildSizing.LeftRightSpacing = 10
+      ChildSizing.TopBottomSpacing = 10
+      ChildSizing.VerticalSpacing = 10
+      object LabelVisibleMembers: TLabel
+        Left = 10
+        Height = 94
+        Top = 10
+        Width = 543
+        HelpType = htKeyword
+        Align = alTop
+        Caption = 'Structures (classes etc.) members (properties, methods, events, fields) to show in documentation :'
+        FocusControl = CheckListVisibleMembers
+        ParentColor = False
+        WordWrap = True
+      end
+      object CheckListVisibleMembers: TCheckListBox
+        Left = 10
+        Height = 130
+        Top = 114
+        Width = 543
+        HelpType = htKeyword
+        HelpKeyword = 'IncludeByVisibility'
+        Align = alTop
+        Items.Strings = (
+          'Published'
+          'Public'
+          'Protected'
+          'Private'
+          'Automated'
+          'Implicit'
+        )
+        ItemHeight = 19
+        OnClick = CheckListVisibleMembersClick
+        TabOrder = 0
+        Data = {
+          06000000000000000000
+        }
+      end
+      object RadioImplicitVisibility: TRadioGroup
+        Left = 10
+        Height = 134
+        Top = 254
+        Width = 543
+        HelpType = htKeyword
+        HelpKeyword = 'ImplicitVisibilityOption'
+        Align = alTop
+        AutoFill = True
+        AutoSize = True
+        Caption = 'Default visibility of members'
+        ChildSizing.LeftRightSpacing = 6
+        ChildSizing.TopBottomSpacing = 6
+        ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+        ChildSizing.EnlargeVertical = crsHomogenousChildResize
+        ChildSizing.ShrinkHorizontal = crsScaleChilds
+        ChildSizing.ShrinkVertical = crsScaleChilds
+        ChildSizing.Layout = cclLeftToRightThenTopToBottom
+        ChildSizing.ControlsPerLine = 1
+        ClientHeight = 107
+        ClientWidth = 539
+        ItemIndex = 0
+        Items.Strings = (
+          '"Public", unless the class is declared within {$M+} state, then it''s "published"'
+          'Always "published"'
+          'Always "implicit"'
+        )
+        OnClick = SomethingChanged
+        TabOrder = 1
+      end
+    end
+    object pageCustomFiles: TPage
+      Hint = 'Custom Files'
+      ChildSizing.LeftRightSpacing = 10
+      ChildSizing.TopBottomSpacing = 10
+      ChildSizing.HorizontalSpacing = 10
+      ChildSizing.ControlsPerLine = 1
+      object LabelConclusionFile: TLabel
+        AnchorSideTop.Control = EditIntroductionFileName
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 28
+        Top = 138
+        Width = 158
+        HelpType = htKeyword
+        Caption = 'Conclusion file'
+        FocusControl = EditConclusionFileName
+        ParentColor = False
+      end
+      object LabelIntroductionFile: TLabel
+        AnchorSideTop.Control = EditCssFileName
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 28
+        Top = 73
+        Width = 173
+        HelpType = htKeyword
+        Caption = 'Introduction file'
+        FocusControl = EditIntroductionFileName
+        ParentColor = False
+      end
+      object LabelCssFileName: TLabel
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 28
+        Hint = 'Custom CSS file. Leave empty to use default pasdoc.css.'
+        Top = 8
+        Width = 377
+        HelpType = htKeyword
+        Caption = 'Custom CSS file (for HTML output)'
+        FocusControl = EditCssFileName
+        ParentColor = False
+      end
+      object EditConclusionFileName: TFileNameEdit
+        AnchorSideTop.Control = LabelConclusionFile
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 37
+        Hint = 'Optional file used as a conclusion to your project.'
+        Top = 166
+        Width = 426
+        HelpType = htKeyword
+        HelpKeyword = 'IntroductionAndConclusion'
+        DialogTitle = 'Choose conclusion file'
+        DialogOptions = []
+        FilterIndex = 0
+        HideDirectories = False
+        ButtonWidth = 23
+        NumGlyphs = 1
+        Anchors = [akTop, akLeft, akRight]
+        MaxLength = 0
+        TabOrder = 0
+        OnChange = SomethingChanged
+      end
+      object EditIntroductionFileName: TFileNameEdit
+        AnchorSideTop.Control = LabelIntroductionFile
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 37
+        Hint = 'Optional file used as an introduction to your project.'
+        Top = 101
+        Width = 426
+        HelpType = htKeyword
+        HelpKeyword = 'IntroductionAndConclusion'
+        DialogTitle = 'Choose introduction file'
+        DialogOptions = []
+        FilterIndex = 0
+        HideDirectories = False
+        ButtonWidth = 23
+        NumGlyphs = 1
+        Anchors = [akTop, akLeft, akRight]
+        MaxLength = 0
+        TabOrder = 1
+        OnChange = SomethingChanged
+      end
+      object EditCssFileName: TFileNameEdit
+        AnchorSideTop.Control = LabelCssFileName
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 37
+        Top = 36
+        Width = 483
+        HelpType = htKeyword
+        HelpKeyword = 'CssOption'
+        DialogTitle = 'Choose custom CSS file'
+        DialogOptions = []
+        Filter = 'Cascading Style Sheets (*.css)|*.css'
+        FilterIndex = 0
+        HideDirectories = False
+        ButtonWidth = 23
+        NumGlyphs = 1
+        MaxLength = 0
+        TabOrder = 2
+        OnChange = SomethingChanged
+      end
+    end
+    object pageLatexOptions: TPage
+      Hint = 'LaTeX Options'
+      object LabelLatexGraphicsPackage: TLabel
+        AnchorSideTop.Control = rgLineBreakQuality
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 28
+        Top = 103
+        Width = 263
+        Caption = 'LateX graphics package'
+        FocusControl = comboLatexGraphicsPackage
+        ParentColor = False
+      end
+      object LabelHyphenatedWords: TLabel
+        Left = 8
+        Height = 127
+        Top = 173
+        Width = 563
+        HelpType = htKeyword
+        Align = alCustom
+        Anchors = [akTop, akLeft, akRight]
+        Caption = 'You can specify how you want words to be hyphenated here. Just enter the word (one per line) with hyphens in the correct places. Only English letters are allowed.'
+        ParentColor = False
+        WordWrap = True
+      end
+      object rgLineBreakQuality: TRadioGroup
+        Left = 0
+        Height = 103
+        Top = 0
+        Width = 563
+        HelpType = htKeyword
+        HelpKeyword = 'PasDocGui/LatexLineBreaks'
+        Align = alTop
+        AutoFill = True
+        AutoSize = True
+        Caption = 'Line Breaks'
+        ChildSizing.LeftRightSpacing = 6
+        ChildSizing.TopBottomSpacing = 6
+        ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+        ChildSizing.EnlargeVertical = crsHomogenousChildResize
+        ChildSizing.ShrinkHorizontal = crsScaleChilds
+        ChildSizing.ShrinkVertical = crsScaleChilds
+        ChildSizing.Layout = cclLeftToRightThenTopToBottom
+        ChildSizing.ControlsPerLine = 1
+        ClientHeight = 76
+        ClientWidth = 559
+        ItemIndex = 0
+        Items.Strings = (
+          'strict'
+          'sloppy'
+        )
+        OnClick = SomethingChanged
+        TabOrder = 1
+      end
+      object comboLatexGraphicsPackage: TComboBox
+        AnchorSideTop.Control = LabelLatexGraphicsPackage
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 38
+        Hint = 'If you use graphics in LaTeX, you have to specify '#10'the graphics package in the header for the LaTeX file.'#10'This option allows you to specify which one to use.'
+        Top = 131
+        Width = 148
+        Enabled = False
+        ItemHeight = 0
+        ItemIndex = 0
+        Items.Strings = (
+          'None'
+          'PDF'
+          'DVI'
+        )
+        OnChange = SomethingChanged
+        Style = csDropDownList
+        TabOrder = 0
+        Text = 'None'
+      end
+      object memoHyphenatedWords: TMemo
+        AnchorSideTop.Control = LabelHyphenatedWords
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 189
+        Top = 300
+        Width = 549
+        Align = alCustom
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        OnChange = SomethingChanged
+        TabOrder = 2
+      end
+    end
+    object pageHeadFoot: TPage
+      Hint = 'Header / Footer'
+      object PanelHeaderHidden: TPanel
+        Left = 0
+        Height = 179
+        Top = 0
+        Width = 563
+        Align = alTop
+        BevelOuter = bvNone
+        BorderWidth = 10
+        ClientHeight = 179
+        ClientWidth = 563
+        TabOrder = 0
+        object LabelHeader: TLabel
+          Left = 10
+          Height = 28
+          Top = 10
+          Width = 543
+          HelpType = htKeyword
+          Align = alTop
+          Caption = '&Header (Will appear at the top of every web page)'
+          FocusControl = memoHeader
+          ParentColor = False
+        end
+        object memoHeader: TMemo
+          Left = 10
+          Height = 131
+          Top = 38
+          Width = 543
+          HelpType = htKeyword
+          HelpKeyword = 'FileAsHeaderOrFooter'
+          Align = alClient
+          OnChange = SomethingChanged
+          TabOrder = 0
+          WordWrap = False
+        end
+      end
+      object Splitter2: TSplitter
+        Cursor = crVSplit
+        Left = 0
+        Height = 9
+        Top = 179
+        Width = 563
+        Align = alTop
+        ResizeAnchor = akTop
+      end
+      object PanelFooterHidden: TPanel
+        Left = 0
+        Height = 304
+        Top = 188
+        Width = 563
+        Align = alClient
+        BevelOuter = bvNone
+        BorderWidth = 10
+        ClientHeight = 304
+        ClientWidth = 563
+        TabOrder = 1
+        object LabelFooter: TLabel
+          Left = 10
+          Height = 28
+          Top = 10
+          Width = 543
+          HelpType = htKeyword
+          Align = alTop
+          Caption = '&Footer (Will appear at the bottom of every page)'
+          FocusControl = memoFooter
+          ParentColor = False
+        end
+        object memoFooter: TMemo
+          Left = 10
+          Height = 256
+          Top = 38
+          Width = 543
+          HelpType = htKeyword
+          HelpKeyword = 'FileAsHeaderOrFooter'
+          Align = alClient
+          OnChange = SomethingChanged
+          TabOrder = 0
+          WordWrap = False
+        end
+      end
+    end
+    object pageGraphs: TPage
+      Hint = 'Graphs'
+      object Label22: TLabel
+        AnchorSideTop.Control = cbVizGraphUses
+        AnchorSideTop.Side = asrBottom
+        Left = 14
+        Height = 61
+        Top = 92
+        Width = 465
+        BorderSpacing.Top = 20
+        Caption = 'You will have to generate graphs yourself. '#10'Use the "dot" program from GraphViz:'
+        ParentColor = False
+      end
+      object cbVizGraphUses: TCheckBox
+        AnchorSideTop.Control = cbVizGraphClasses
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 31
+        Top = 41
+        Width = 347
+        HelpType = htKeyword
+        HelpKeyword = 'GraphVizSupport'
+        Caption = 'Generate and use Uses graph'
+        OnChange = SomethingChanged
+        TabOrder = 0
+      end
+      object cbVizGraphClasses: TCheckBox
+        Left = 8
+        Height = 31
+        Top = 10
+        Width = 376
+        HelpType = htKeyword
+        HelpKeyword = 'GraphVizSupport'
+        Caption = 'Generate and use Classes graph'
+        OnChange = SomethingChanged
+        TabOrder = 1
+      end
+      object ButtonGraphVizURL: TButton
+        AnchorSideTop.Control = Label22
+        AnchorSideTop.Side = asrBottom
+        Left = 14
+        Height = 47
+        Top = 153
+        Width = 292
+        AutoSize = True
+        BorderSpacing.InnerBorder = 4
+        Caption = 'http://www.graphviz.org/'
+        OnClick = ButtonURLClick
+        TabOrder = 2
+      end
+    end
+    object pageSpellChecking: TPage
+      Hint = 'Spell Checking'
+      object PanelSpellCheckingTop1: TPanel
+        Left = 0
+        Height = 208
+        Top = 0
+        Width = 563
+        Align = alTop
+        AutoSize = True
+        BevelOuter = bvNone
+        BorderWidth = 10
+        ClientHeight = 208
+        ClientWidth = 563
+        FullRepaint = False
+        TabOrder = 1
+        object Label20: TLabel
+          AnchorSideTop.Control = ButtonAspellURL
+          AnchorSideTop.Side = asrBottom
+          Left = 10
+          Height = 61
+          Top = 147
+          Width = 546
+          HelpType = htKeyword
+          Anchors = [akTop, akLeft, akRight]
+          AutoSize = False
+          Caption = 'Enter words that should be ignored when spell-checking below.'#10'One word per line.'
+          FocusControl = memoSpellCheckingIgnore
+          ParentColor = False
+          WordWrap = True
+        end
+        object Label23: TLabel
+          AnchorSideTop.Control = cbCheckSpelling
+          AnchorSideTop.Side = asrBottom
+          Left = 8
+          Height = 61
+          Top = 39
+          Width = 546
+          Anchors = [akTop, akLeft, akRight]
+          Caption = 'GNU Aspell must be installed and available on $PATH for spell checking :'
+          ParentColor = False
+          WordWrap = True
+        end
+        object cbCheckSpelling: TCheckBox
+          Left = 8
+          Height = 31
+          Top = 8
+          Width = 185
+          HelpType = htKeyword
+          HelpKeyword = 'SpellChecking'
+          Caption = 'Check Spelling'
+          OnChange = cbCheckSpellingChange
+          TabOrder = 0
+        end
+        object ButtonAspellURL: TButton
+          AnchorSideTop.Control = Label23
+          AnchorSideTop.Side = asrBottom
+          Left = 8
+          Height = 47
+          Top = 100
+          Width = 336
+          AutoSize = True
+          BorderSpacing.InnerBorder = 4
+          Caption = 'http://aspell.sourceforge.net/'
+          OnClick = ButtonURLClick
+          TabOrder = 1
+        end
+      end
+      object memoSpellCheckingIgnore: TMemo
+        Left = 10
+        Height = 264
+        Top = 218
+        Width = 543
+        HelpType = htKeyword
+        HelpKeyword = 'SpellChecking'
+        Align = alClient
+        BorderSpacing.Around = 10
+        ScrollBars = ssAutoBoth
+        TabOrder = 0
+        WordWrap = False
+      end
+    end
+    object pageMarkers: TPage
+      Hint = 'Markers'
+      object LabelCommentMarkers: TLabel
+        AnchorSideTop.Control = rgCommentMarkers
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 28
+        Top = 142
+        Width = 287
+        HelpType = htKeyword
+        BorderSpacing.Top = 8
+        Caption = 'Special comment markers'
+        FocusControl = memoCommentMarkers
+        ParentColor = False
+      end
+      object memoCommentMarkers: TMemo
+        AnchorSideTop.Control = LabelCommentMarkers
+        AnchorSideTop.Side = asrBottom
+        Left = 10
+        Height = 338
+        Top = 180
+        Width = 543
+        HelpType = htKeyword
+        HelpKeyword = 'CommentMarker'
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        BorderSpacing.Around = 10
+        OnChange = SomethingChanged
+        TabOrder = 0
+      end
+      object rgCommentMarkers: TRadioGroup
+        Left = 0
+        Height = 134
+        Top = 0
+        Width = 699
+        HelpType = htKeyword
+        HelpKeyword = 'CommentMarker'
+        AutoFill = True
+        AutoSize = True
+        Caption = 'Comment marker treatment'
+        ChildSizing.LeftRightSpacing = 6
+        ChildSizing.TopBottomSpacing = 6
+        ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+        ChildSizing.EnlargeVertical = crsHomogenousChildResize
+        ChildSizing.ShrinkHorizontal = crsScaleChilds
+        ChildSizing.ShrinkVertical = crsScaleChilds
+        ChildSizing.Layout = cclLeftToRightThenTopToBottom
+        ChildSizing.ControlsPerLine = 1
+        ClientHeight = 107
+        ClientWidth = 695
+        ItemIndex = 1
+        Items.Strings = (
+          'Ignore special comment markers'
+          'Include all comments but remove special comment markers'
+          'Include only comments with special comment markers'
+        )
+        OnClick = rgCommentMarkersClick
+        TabOrder = 1
+      end
+    end
+    object PageSort: TPage
+      Hint = 'Sort'
+      object LabelItemsToSort: TLabel
+        Left = 8
+        Height = 28
+        Top = 8
+        Width = 300
+        HelpType = htKeyword
+        Caption = 'Items to sort alphabetically'
+        ParentColor = False
+      end
+      object clbSorting: TCheckListBox
+        AnchorSideTop.Control = LabelItemsToSort
+        AnchorSideTop.Side = asrBottom
+        Left = 8
+        Height = 448
+        Hint = 'Which items will be sorted alphabetically '#10'and which will be displayed in their declared order.'
+        Top = 36
+        Width = 548
+        HelpType = htKeyword
+        HelpKeyword = 'SortOption'
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        Items.Strings = (
+          'structures'
+          'constants'
+          'global functions'
+          'types'
+          'variables'
+          'uses-clauses'
+          'record-fields'
+          'non-record-fields'
+          'methods'
+          'properties'
+        )
+        ItemHeight = 19
+        OnClick = SomethingChanged
+        TabOrder = 0
+        TopIndex = -1
+        Data = {
+          0A00000000000000000000000000
+        }
+      end
+    end
+    object pageGenerate: TPage
+      Hint = 'Generate'
+      object PanelGenerateTop: TPanel
+        Left = 0
+        Height = 105
+        Top = 0
+        Width = 563
+        Align = alTop
+        Alignment = taLeftJustify
+        BevelOuter = bvNone
+        BorderWidth = 10
+        ClientHeight = 105
+        ClientWidth = 563
+        FullRepaint = False
+        TabOrder = 1
+        object Label7: TLabel
+          AnchorSideLeft.Control = seVerbosity
+          AnchorSideLeft.Side = asrBottom
+          AnchorSideTop.Control = seVerbosity
+          AnchorSideTop.Side = asrCenter
+          Left = 82
+          Height = 28
+          Top = 12
+          Width = 309
+          HelpType = htKeyword
+          BorderSpacing.Left = 8
+          Caption = 'Verbosity level (default is 2)'
+          ParentColor = False
+        end
+        object seVerbosity: TSpinEdit
+          Left = 10
+          Height = 37
+          Hint = 'The higher the message level, the more messages will be shown.'
+          Top = 8
+          Width = 64
+          HelpType = htKeyword
+          MaxValue = 6
+          OnChange = SomethingChanged
+          TabOrder = 0
+          Value = 2
+        end
+        object ButtonGenerateDocs: TButton
+          Left = 10
+          Height = 39
+          Top = 56
+          Width = 543
+          Align = alBottom
+          AutoSize = True
+          Caption = 'Generate documentation'
+          OnClick = ButtonGenerateDocsClick
+          TabOrder = 1
+        end
+      end
+      object memoMessages: TMemo
+        Left = 10
+        Height = 403
+        Top = 115
+        Width = 543
+        HelpType = htKeyword
+        Align = alClient
+        BorderSpacing.Around = 10
+        ScrollBars = ssBoth
+        TabOrder = 0
+      end
+    end
+    object pageDisplayComments: TPage
+      Hint = 'Display Comments'
+      object tvUnits: TTreeView
+        Left = 0
+        Height = 268
+        Top = 28
+        Width = 563
+        Align = alClient
+        DefaultItemHeight = 29
+        TabOrder = 0
+        OnClick = tvUnitsClick
+      end
+      inline seComment: TSynEdit
+        Left = 0
+        Height = 191
+        Top = 301
+        Width = 563
+        Align = alBottom
+        Font.Height = -16
+        Font.Name = 'courier'
+        Font.Pitch = fpFixed
+        Font.Quality = fqNonAntialiased
+        ParentColor = False
+        ParentFont = False
+        TabOrder = 1
+        Gutter.Width = 61
+        Gutter.MouseActions = <        
+          item
+            ClickCount = ccAny
+            ClickDir = cdDown
+            Command = emcOnMainGutterClick
+          end        
+          item
+            Button = mbRight
+            Command = emcContextMenu
+          end>
+        RightGutter.Width = 0
+        RightGutter.MouseActions = <>
+        Keystrokes = <        
+          item
+            Command = ecUp
+            ShortCut = 38
+          end        
+          item
+            Command = ecSelUp
+            ShortCut = 8230
+          end        
+          item
+            Command = ecScrollUp
+            ShortCut = 16422
+          end        
+          item
+            Command = ecDown
+            ShortCut = 40
+          end        
+          item
+            Command = ecSelDown
+            ShortCut = 8232
+          end        
+          item
+            Command = ecScrollDown
+            ShortCut = 16424
+          end        
+          item
+            Command = ecLeft
+            ShortCut = 37
+          end        
+          item
+            Command = ecSelLeft
+            ShortCut = 8229
+          end        
+          item
+            Command = ecWordLeft
+            ShortCut = 16421
+          end        
+          item
+            Command = ecSelWordLeft
+            ShortCut = 24613
+          end        
+          item
+            Command = ecRight
+            ShortCut = 39
+          end        
+          item
+            Command = ecSelRight
+            ShortCut = 8231
+          end        
+          item
+            Command = ecWordRight
+            ShortCut = 16423
+          end        
+          item
+            Command = ecSelWordRight
+            ShortCut = 24615
+          end        
+          item
+            Command = ecPageDown
+            ShortCut = 34
+          end        
+          item
+            Command = ecSelPageDown
+            ShortCut = 8226
+          end        
+          item
+            Command = ecPageBottom
+            ShortCut = 16418
+          end        
+          item
+            Command = ecSelPageBottom
+            ShortCut = 24610
+          end        
+          item
+            Command = ecPageUp
+            ShortCut = 33
+          end        
+          item
+            Command = ecSelPageUp
+            ShortCut = 8225
+          end        
+          item
+            Command = ecPageTop
+            ShortCut = 16417
+          end        
+          item
+            Command = ecSelPageTop
+            ShortCut = 24609
+          end        
+          item
+            Command = ecLineStart
+            ShortCut = 36
+          end        
+          item
+            Command = ecSelLineStart
+            ShortCut = 8228
+          end        
+          item
+            Command = ecEditorTop
+            ShortCut = 16420
+          end        
+          item
+            Command = ecSelEditorTop
+            ShortCut = 24612
+          end        
+          item
+            Command = ecLineEnd
+            ShortCut = 35
+          end        
+          item
+            Command = ecSelLineEnd
+            ShortCut = 8227
+          end        
+          item
+            Command = ecEditorBottom
+            ShortCut = 16419
+          end        
+          item
+            Command = ecSelEditorBottom
+            ShortCut = 24611
+          end        
+          item
+            Command = ecToggleMode
+            ShortCut = 45
+          end        
+          item
+            Command = ecCopy
+            ShortCut = 16429
+          end        
+          item
+            Command = ecPaste
+            ShortCut = 8237
+          end        
+          item
+            Command = ecDeleteChar
+            ShortCut = 46
+          end        
+          item
+            Command = ecCut
+            ShortCut = 8238
+          end        
+          item
+            Command = ecDeleteLastChar
+            ShortCut = 8
+          end        
+          item
+            Command = ecDeleteLastChar
+            ShortCut = 8200
+          end        
+          item
+            Command = ecDeleteLastWord
+            ShortCut = 16392
+          end        
+          item
+            Command = ecUndo
+            ShortCut = 32776
+          end        
+          item
+            Command = ecRedo
+            ShortCut = 40968
+          end        
+          item
+            Command = ecLineBreak
+            ShortCut = 13
+          end        
+          item
+            Command = ecSelectAll
+            ShortCut = 16449
+          end        
+          item
+            Command = ecCopy
+            ShortCut = 16451
+          end        
+          item
+            Command = ecBlockIndent
+            ShortCut = 24649
+          end        
+          item
+            Command = ecLineBreak
+            ShortCut = 16461
+          end        
+          item
+            Command = ecInsertLine
+            ShortCut = 16462
+          end        
+          item
+            Command = ecDeleteWord
+            ShortCut = 16468
+          end        
+          item
+            Command = ecBlockUnindent
+            ShortCut = 24661
+          end        
+          item
+            Command = ecPaste
+            ShortCut = 16470
+          end        
+          item
+            Command = ecCut
+            ShortCut = 16472
+          end        
+          item
+            Command = ecDeleteLine
+            ShortCut = 16473
+          end        
+          item
+            Command = ecDeleteEOL
+            ShortCut = 24665
+          end        
+          item
+            Command = ecUndo
+            ShortCut = 16474
+          end        
+          item
+            Command = ecRedo
+            ShortCut = 24666
+          end        
+          item
+            Command = ecGotoMarker0
+            ShortCut = 16432
+          end        
+          item
+            Command = ecGotoMarker1
+            ShortCut = 16433
+          end        
+          item
+            Command = ecGotoMarker2
+            ShortCut = 16434
+          end        
+          item
+            Command = ecGotoMarker3
+            ShortCut = 16435
+          end        
+          item
+            Command = ecGotoMarker4
+            ShortCut = 16436
+          end        
+          item
+            Command = ecGotoMarker5
+            ShortCut = 16437
+          end        
+          item
+            Command = ecGotoMarker6
+            ShortCut = 16438
+          end        
+          item
+            Command = ecGotoMarker7
+            ShortCut = 16439
+          end        
+          item
+            Command = ecGotoMarker8
+            ShortCut = 16440
+          end        
+          item
+            Command = ecGotoMarker9
+            ShortCut = 16441
+          end        
+          item
+            Command = ecSetMarker0
+            ShortCut = 24624
+          end        
+          item
+            Command = ecSetMarker1
+            ShortCut = 24625
+          end        
+          item
+            Command = ecSetMarker2
+            ShortCut = 24626
+          end        
+          item
+            Command = ecSetMarker3
+            ShortCut = 24627
+          end        
+          item
+            Command = ecSetMarker4
+            ShortCut = 24628
+          end        
+          item
+            Command = ecSetMarker5
+            ShortCut = 24629
+          end        
+          item
+            Command = ecSetMarker6
+            ShortCut = 24630
+          end        
+          item
+            Command = ecSetMarker7
+            ShortCut = 24631
+          end        
+          item
+            Command = ecSetMarker8
+            ShortCut = 24632
+          end        
+          item
+            Command = ecSetMarker9
+            ShortCut = 24633
+          end        
+          item
+            Command = ecNormalSelect
+            ShortCut = 24654
+          end        
+          item
+            Command = ecColumnSelect
+            ShortCut = 24643
+          end        
+          item
+            Command = ecLineSelect
+            ShortCut = 24652
+          end        
+          item
+            Command = ecTab
+            ShortCut = 9
+          end        
+          item
+            Command = ecShiftTab
+            ShortCut = 8201
+          end        
+          item
+            Command = ecMatchBracket
+            ShortCut = 24642
+          end>
+        MouseActions = <        
+          item
+            ShiftMask = [ssShift, ssAlt]
+            ClickDir = cdDown
+            Command = emcStartSelections
+            MoveCaret = True
+          end        
+          item
+            Shift = [ssShift]
+            ShiftMask = [ssShift, ssAlt]
+            ClickDir = cdDown
+            Command = emcStartSelections
+            MoveCaret = True
+            Option = 1
+          end        
+          item
+            Shift = [ssAlt]
+            ShiftMask = [ssShift, ssAlt]
+            ClickDir = cdDown
+            Command = emcStartColumnSelections
+            MoveCaret = True
+          end        
+          item
+            Shift = [ssShift, ssAlt]
+            ShiftMask = [ssShift, ssAlt]
+            ClickDir = cdDown
+            Command = emcStartColumnSelections
+            MoveCaret = True
+            Option = 1
+          end        
+          item
+            Button = mbRight
+            Command = emcContextMenu
+          end        
+          item
+            ClickCount = ccDouble
+            ClickDir = cdDown
+            Command = emcSelectWord
+            MoveCaret = True
+          end        
+          item
+            ClickCount = ccTriple
+            ClickDir = cdDown
+            Command = emcSelectLine
+            MoveCaret = True
+          end        
+          item
+            ClickCount = ccQuad
+            ClickDir = cdDown
+            Command = emcSelectPara
+            MoveCaret = True
+          end        
+          item
+            Button = mbMiddle
+            ClickDir = cdDown
+            Command = emcPasteSelection
+            MoveCaret = True
+          end        
+          item
+            Shift = [ssCtrl]
+            ShiftMask = [ssShift, ssAlt, ssCtrl]
+            Command = emcMouseLink
+          end>
+        MouseSelActions = <        
+          item
+            ClickDir = cdDown
+            Command = emcStartDragMove
+          end>
+        VisibleSpecialChars = [vscSpace, vscTabAtLast]
+        SelectedColor.BackPriority = 50
+        SelectedColor.ForePriority = 50
+        SelectedColor.FramePriority = 50
+        SelectedColor.BoldPriority = 50
+        SelectedColor.ItalicPriority = 50
+        SelectedColor.UnderlinePriority = 50
+        BracketHighlightStyle = sbhsBoth
+        BracketMatchColor.Background = clNone
+        BracketMatchColor.Foreground = clNone
+        BracketMatchColor.Style = [fsBold]
+        FoldedCodeColor.Background = clNone
+        FoldedCodeColor.Foreground = clGray
+        FoldedCodeColor.FrameColor = clGray
+        MouseLinkColor.Background = clNone
+        MouseLinkColor.Foreground = clBlue
+        LineHighlightColor.Background = clNone
+        LineHighlightColor.Foreground = clNone
+        inline TSynGutterPartList
+          object TSynGutterMarks
+            Width = 24
+            MouseActions = <>
+          end
+          object TSynGutterLineNumber
+            Width = 21
+            MouseActions = <>
+            MarkupInfo.Background = clBtnFace
+            MarkupInfo.Foreground = clNone
+            DigitCount = 2
+            ShowOnlyLineNumbersMultiplesOf = 1
+            ZeroStart = False
+            LeadingZeros = False
+          end
+          object TSynGutterChanges
+            Width = 4
+            MouseActions = <>
+            ModifiedColor = 59900
+            SavedColor = clGreen
+          end
+          object TSynGutterSeparator
+            Width = 2
+            MouseActions = <>
+            MarkupInfo.Background = clWhite
+            MarkupInfo.Foreground = clGray
+          end
+          object TSynGutterCodeFolding
+            MouseActions = <            
+              item
+                Button = mbRight
+                Command = emcCodeFoldContextMenu
+              end            
+              item
+                ShiftMask = [ssShift]
+                Button = mbMiddle
+                ClickCount = ccAny
+                ClickDir = cdDown
+                Command = emcCodeFoldCollaps
+              end            
+              item
+                Shift = [ssShift]
+                ShiftMask = [ssShift]
+                Button = mbMiddle
+                ClickCount = ccAny
+                ClickDir = cdDown
+                Command = emcCodeFoldCollaps
+                Option = 1
+              end            
+              item
+                ClickCount = ccAny
+                ClickDir = cdDown
+                Command = emcNone
+              end>
+            MarkupInfo.Background = clNone
+            MarkupInfo.Foreground = clGray
+            MouseActionsExpanded = <            
+              item
+                ClickCount = ccAny
+                ClickDir = cdDown
+                Command = emcCodeFoldCollaps
+              end>
+            MouseActionsCollapsed = <            
+              item
+                Shift = [ssCtrl]
+                ShiftMask = [ssCtrl]
+                ClickCount = ccAny
+                ClickDir = cdDown
+                Command = emcCodeFoldExpand
+              end            
+              item
+                ShiftMask = [ssCtrl]
+                ClickCount = ccAny
+                ClickDir = cdDown
+                Command = emcCodeFoldExpand
+                Option = 1
+              end>
+          end
+        end
+      end
+      object Splitter1: TSplitter
+        Cursor = crVSplit
+        Left = 0
+        Height = 5
+        Top = 296
+        Width = 563
+        Align = alBottom
+        ResizeAnchor = akBottom
+      end
+      object pnlEditCommentInstructions: TPanel
+        Left = 0
+        Height = 28
+        Top = 0
+        Width = 563
+        Align = alTop
+        Caption = 'Click on an item in the tree view to see its comment.'
+        FullRepaint = False
+        TabOrder = 2
+      end
+    end
+  end
+  object PanelLeft: TPanel
+    Left = 0
+    Height = 533
+    Top = 0
+    Width = 208
+    Align = alLeft
+    BevelOuter = bvNone
+    ClientHeight = 533
+    ClientWidth = 208
+    TabOrder = 1
+    object lbNavigation: TListBox
+      Left = 0
+      Height = 482
+      Top = 51
+      Width = 208
+      Align = alClient
+      ItemHeight = 0
+      OnClick = lbNavigationClick
+      ScrollWidth = 206
+      TabOrder = 0
+      TopIndex = -1
+    end
+    object ButtonGenerate: TBitBtn
+      Left = 10
+      Height = 31
+      Hint = 'Generate documentation (F9)'
+      Top = 10
+      Width = 188
+      Align = alTop
+      AutoSize = True
+      BorderSpacing.Around = 10
+      Caption = 'Generate'
+      OnClick = MenuGenerateRunClick
+      TabOrder = 1
+    end
+  end
+  object PasDoc1: TPasDoc
+    OnMessage = PasDoc1Warning
+    MarkerOptional = True
+    Generator = HtmlDocGenerator
+    ShowVisibilities = []
+    left = 136
+    top = 528
+  end
+  object HtmlDocGenerator: THTMLDocGenerator
+    CSS = 'body { font-family: Verdana,Arial; '#10'  color: black; background-color: white; '#10'  font-size: 12px; }'#10'body.navigationframe { font-family: Verdana,Arial; '#10'  color: white; background-color: #787878; '#10'  font-size: 12px; }'#10#10'img { border:0px; }'#10#10'a:link {color:#C91E0C; text-decoration: none; }'#10'a:visited {color:#7E5C31; text-decoration: none; }'#10'a:hover {text-decoration: underline; }'#10'a:active {text-decoration: underline; }'#10#10'a.navigation:link { color: white; text-decoration: none; font-size: 12px;}'#10'a.navigation:visited { color: white; text-decoration: none; font-size: 12px;}'#10'a.navigation:hover { color: white; font-weight: bold; '#10'  text-decoration: none; font-size: 12px; }'#10'a.navigation:active { color: white; text-decoration: none; font-size: 12px;}'#10#10'a.bold:link {color:#C91E0C; text-decoration: none; font-weight:bold; }'#10'a.bold:visited {color:#7E5C31; text-decoration: none; font-weight:bold; }'#10'a.bold:hover {text-decoration: underline; font-weight:bold; }'#10'a.bold:active {text-decoration: underline; font-weight:bold; }'#10#10'a.section {color: green; text-decoration: none; font-weight: bold; }'#10'a.section:hover {color: green; text-decoration: underline; font-weight: bold; }'#10#10'ul.useslist a:link {color:#C91E0C; text-decoration: none; font-weight:bold; }'#10'ul.useslist a:visited {color:#7E5C31; text-decoration: none; font-weight:bold; }'#10'ul.useslist a:hover {text-decoration: underline; font-weight:bold; }'#10'ul.useslist a:active {text-decoration: underline; font-weight:bold; }'#10#10'ul.hierarchy { list-style-type:none; }'#10'ul.hierarchylevel { list-style-type:none; }'#10#10'p.unitlink a:link {color:#C91E0C; text-decoration: none; font-weight:bold; }'#10'p.unitlink a:visited {color:#7E5C31; text-decoration: none; font-weight:bold; }'#10'p.unitlink a:hover {text-decoration: underline; font-weight:bold; }'#10'p.unitlink a:active {text-decoration: underline; font-weight:bold; }'#10#10'tr.list { background: #FFBF44; }'#10'tr.list2 { background: #FFC982; }'#10'tr.listheader { background: #C91E0C; color: white; }'#10#10'table { border-spacing:2px; padding:4px; width:100%; }'#10#10'table.markerlegend { width:auto; }'#10'table.markerlegend td.legendmarker { text-align:center; }'#10#10'table.sections { background:white; }'#10'table.sections td {background:lightgray; }'#10#10'table.summary td.itemcode { width:100%; }'#10'table.detail td.itemcode { width:100%; }'#10#10'td { vertical-align:top; padding:4px; }'#10#10'td.itemname {white-space:nowrap; }'#10'td.itemunit {white-space:nowrap; }'#10'td.itemdesc { width:100%; }'#10#10'div.nodescription {color:red;}'#10'dl.parameters {;}'#10'dl.parameters dt {color:blue;}'#10'dl.parameters dd {;}'#10#10'/* Style applied to Pascal code in documentation '#10'   (e.g. produced by @longcode tag) } */'#10'span.pascal_string { color: #000080; }'#10'span.pascal_keyword { font-weight: bolder; }'#10'span.pascal_comment { color: #000080; font-style: italic; }'#10'span.pascal_compiler_comment { color: #008000; }'#10'span.pascal_numeric { }'#10'span.pascal_hex { }'#10#10'p.hint_directive { color: red; }'#10#10'input#search_text { }'#10'input#search_submit_button { }'#10#10'acronym.mispelling { background-color: #ffa; }'#10
+    left = 168
+    top = 528
+  end
+  object OpenDialog1: TOpenDialog
+    Title = 'Open existing file'
+    Filter = 'Delphi source files *.pas|*.pas|Free Pascal source files *.pp|*.pp|All Pascal source files *.pas, *.pp|*.pas;*.pp|All Files *.*|*.*'
+    FilterIndex = 3
+    Options = [ofHideReadOnly, ofAllowMultiSelect, ofFileMustExist, ofEnableSizing]
+    top = 528
+  end
+  object SaveDialog1: TSaveDialog
+    Title = 'Save file as'
+    DefaultExt = '.pds'
+    Filter = 'PasDoc GUI Settings (*.pds)|*.pds'
+    FilterIndex = 0
+    left = 96
+    top = 528
+  end
+  object OpenDialog2: TOpenDialog
+    Title = 'Open existing file'
+    DefaultExt = '.pds'
+    Filter = 'PasDoc GUI Settings (*.pds)|*.pds'
+    FilterIndex = 0
+    left = 64
+    top = 528
+  end
+  object MainMenu1: TMainMenu
+    left = 32
+    top = 528
+    object MenuFile: TMenuItem
+      Caption = '&File'
+      object MenuNew: TMenuItem
+        Caption = '&New'
+        OnClick = MenuNewClick
+      end
+      object MenuOpen: TMenuItem
+        Caption = '&Open ...'
+        OnClick = btnOpenClick
+      end
+      object MenuSave: TMenuItem
+        Caption = 'Save'
+        OnClick = MenuSaveClick
+      end
+      object MenuSaveAs: TMenuItem
+        Caption = '&Save as...'
+        OnClick = MenuSaveAsClick
+      end
+      object MenuExit: TMenuItem
+        Caption = '&Exit'
+        OnClick = Exit1Click
+      end
+    end
+    object MenuEdit: TMenuItem
+      Caption = 'Edit'
+      object MenuPreferences: TMenuItem
+        Caption = 'Preferences'
+        OnClick = MenuPreferencesClick
+      end
+    end
+    object MenuGenerate: TMenuItem
+      Caption = 'Generate'
+      object MenuGenerateRun: TMenuItem
+        Caption = 'Generate documentation'
+        OnClick = MenuGenerateRunClick
+      end
+    end
+    object MenuHelp: TMenuItem
+      Caption = '&Help'
+      object MenuContextHelp: TMenuItem
+        Caption = 'Online Help'
+        OnClick = MenuContextHelpClick
+      end
+      object MenuAbout: TMenuItem
+        Caption = '&About'
+        OnClick = MenuAboutClick
+      end
+    end
+  end
+  object TexDocGenerator: TTexDocGenerator
+    left = 200
+    top = 528
+  end
+  object HtmlHelpDocGenerator: THTMLHelpDocGenerator
+    CSS = 'body { font-family: Verdana,Arial; '#10'  color: black; background-color: white; '#10'  font-size: 12px; }'#10'body.navigationframe { font-family: Verdana,Arial; '#10'  color: white; background-color: #787878; '#10'  font-size: 12px; }'#10#10'img { border:0px; }'#10#10'a:link {color:#C91E0C; text-decoration: none; }'#10'a:visited {color:#7E5C31; text-decoration: none; }'#10'a:hover {text-decoration: underline; }'#10'a:active {text-decoration: underline; }'#10#10'a.navigation:link { color: white; text-decoration: none; font-size: 12px;}'#10'a.navigation:visited { color: white; text-decoration: none; font-size: 12px;}'#10'a.navigation:hover { color: white; font-weight: bold; '#10'  text-decoration: none; font-size: 12px; }'#10'a.navigation:active { color: white; text-decoration: none; font-size: 12px;}'#10#10'a.bold:link {color:#C91E0C; text-decoration: none; font-weight:bold; }'#10'a.bold:visited {color:#7E5C31; text-decoration: none; font-weight:bold; }'#10'a.bold:hover {text-decoration: underline; font-weight:bold; }'#10'a.bold:active {text-decoration: underline; font-weight:bold; }'#10#10'a.section {color: green; text-decoration: none; font-weight: bold; }'#10'a.section:hover {color: green; text-decoration: underline; font-weight: bold; }'#10#10'ul.useslist a:link {color:#C91E0C; text-decoration: none; font-weight:bold; }'#10'ul.useslist a:visited {color:#7E5C31; text-decoration: none; font-weight:bold; }'#10'ul.useslist a:hover {text-decoration: underline; font-weight:bold; }'#10'ul.useslist a:active {text-decoration: underline; font-weight:bold; }'#10#10'ul.hierarchy { list-style-type:none; }'#10'ul.hierarchylevel { list-style-type:none; }'#10#10'p.unitlink a:link {color:#C91E0C; text-decoration: none; font-weight:bold; }'#10'p.unitlink a:visited {color:#7E5C31; text-decoration: none; font-weight:bold; }'#10'p.unitlink a:hover {text-decoration: underline; font-weight:bold; }'#10'p.unitlink a:active {text-decoration: underline; font-weight:bold; }'#10#10'tr.list { background: #FFBF44; }'#10'tr.list2 { background: #FFC982; }'#10'tr.listheader { background: #C91E0C; color: white; }'#10#10'table { border-spacing:2px; padding:4px; width:100%; }'#10#10'table.markerlegend { width:auto; }'#10'table.markerlegend td.legendmarker { text-align:center; }'#10#10'table.sections { background:white; }'#10'table.sections td {background:lightgray; }'#10#10'table.summary td.itemcode { width:100%; }'#10'table.detail td.itemcode { width:100%; }'#10#10'td { vertical-align:top; padding:4px; }'#10#10'td.itemname {white-space:nowrap; }'#10'td.itemunit {white-space:nowrap; }'#10'td.itemdesc { width:100%; }'#10#10'div.nodescription {color:red;}'#10'dl.parameters {;}'#10'dl.parameters dt {color:blue;}'#10'dl.parameters dd {;}'#10#10'/* Style applied to Pascal code in documentation '#10'   (e.g. produced by @longcode tag) } */'#10'span.pascal_string { color: #000080; }'#10'span.pascal_keyword { font-weight: bolder; }'#10'span.pascal_comment { color: #000080; font-style: italic; }'#10'span.pascal_compiler_comment { color: #008000; }'#10'span.pascal_numeric { }'#10'span.pascal_hex { }'#10#10'p.hint_directive { color: red; }'#10#10'input#search_text { }'#10'input#search_submit_button { }'#10#10'acronym.mispelling { background-color: #ffa; }'#10
+    left = 232
+    top = 528
+  end
+end

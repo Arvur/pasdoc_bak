@@ -1,0 +1,57 @@
+This is converted to Lazarus version of VCL/CLX program
+HelpGenerator by Richard B. Winston.
+I (Michalis) converted it to Lazarus (LCL). This is a portable code,
+it should compile and work everywhere where FPC, FCL, LCL are ported.
+
+It depends on pasdoc_package for Lazarus in pasdoc sources,
+so be sure to install pasdoc_package in Lazarus before opening
+pasdoc_gui project.
+
+I'm also putting this source code under GNU GPL (original version
+was on public domain). This should effectively solve any legal concerns
+with HelpGenerator that I mentioned on pasdoc-main list:
+now we have
+- GNU GPLed program that uses
+- GNU GPLed pasdoc and
+- LCL (released on modified GNU LGPL).
+So everything if free, legal, binaries of this program may be
+distributed without problems etc.
+
+Of course solving the legal concerns was not the main goal,
+the main goals are:
+
+- demonstrate using pasdoc components in Lazarus
+
+- provide alternative way to use pasdoc for people that
+  don't want to learn pasdoc's command-line and don't need
+  to call pasdoc in "batch" mode.
+
+  This was also intention of original HelpGenerator, but now
+  we got it absolutely free, without any dependency on Delphi/Kylix,
+  and portable everywhere where FPC is.
+
+  TODO: Although it should be easy to modify this program
+  to let it be called in batch mode. This would allow users
+  to create their configuration using GUI, then call this program
+  (or some other) giving name of the file with settings as
+  parameter. This would allow users to still use pasdoc functionality
+  in batch mode, and at the same time not learn pasdoc's command-line.
+
+See HISTORY file for changes that I did while converting HelpGenerator
+to FPC/Lazarus pasdoc_gui.
+
+Development things:
+
+- In case of uncertainties, we should try to conform to GNOME HIG 2.0
+  standards. This is (at least for now) not to be taken *too* strictly,
+  so don't worry if you don't know GNOME HIG.
+
+- pasdoc_gui.lpi XML file contains many important project settings,
+  but also many settings that you can easily modify "by accident".
+  (actually, this is the same problem as with Delphi/Kylix config files)
+
+  We just have to live with it. So:
+  when committing don't worry if you accidentaly modified something
+  in pasdoc_gui.lpi file, but try to not commit anything really
+  "breaking" there, that could make difficult for other developers
+  to open a project.

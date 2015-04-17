@@ -1,0 +1,60 @@
+object Preferences: TPreferences
+  Left = 459
+  Height = 150
+  Top = 282
+  Width = 362
+  HorzScrollBar.Page = 423
+  VertScrollBar.Page = 191
+  AutoSize = True
+  BorderWidth = 10
+  Caption = 'Preferences'
+  ClientHeight = 150
+  ClientWidth = 362
+  Position = poMainFormCenter
+  LCLVersion = '1.0.10.0'
+  object LabelWWWHelpServer: TLabel
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 26
+    Top = 8
+    Width = 253
+    BorderSpacing.Top = 16
+    Caption = 'Base &URL of PasDoc help pages'
+    FocusControl = EditWWWHelpServer
+    ParentColor = False
+  end
+  object EditWWWHelpServer: TEdit
+    AnchorSideTop.Control = LabelWWWHelpServer
+    AnchorSideTop.Side = asrBottom
+    Left = 8
+    Height = 35
+    Top = 34
+    Width = 346
+    Anchors = [akTop, akLeft, akRight]
+    TabOrder = 0
+    Text = 'EditWWWHelpServer'
+  end
+  object ButtonPanel1: TButtonPanel
+    AnchorSideTop.Control = EditWWWHelpServer
+    AnchorSideTop.Side = asrBottom
+    Left = 10
+    Height = 63
+    Top = 77
+    Width = 342
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Top = 8
+    BorderSpacing.Around = 0
+    OKButton.Name = 'OKButton'
+    OKButton.DefaultCaption = True
+    HelpButton.Name = 'HelpButton'
+    HelpButton.DefaultCaption = True
+    CloseButton.Name = 'CloseButton'
+    CloseButton.DefaultCaption = True
+    CancelButton.Name = 'CancelButton'
+    CancelButton.DefaultCaption = True
+    TabOrder = 1
+    Spacing = 8
+    ShowButtons = [pbOK, pbCancel]
+    ShowBevel = False
+  end
+end

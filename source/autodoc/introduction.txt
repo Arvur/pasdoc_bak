@@ -1,0 +1,93 @@
+@shorttitle(Overview)
+@title(Pasdoc Sources Overview)
+
+This is the documentation of the pasdoc sources, intended for pasdoc developers.
+For user's documentation see [http://pasdoc.sourceforge.net/].
+
+Contents:
+@tableOfContents
+
+General overview of the data flow in pasdoc:
+
+@section(1 SecParsing Parsing)
+
+@link(TTokenizer) reads the source file, and converts it to a series
+of @link(TToken)s.
+
+@link(TScanner) uses an underlying @link(TTokenizer) and
+also returns a series of @link(TToken)s,
+but in addition it understands and interprets $define,
+$ifdef and similar compiler directives. While @link(TTokenizer)
+simply returns all tokens, @link(TScanner) returns only those tokens
+that are not "$ifdefed out". E.g. if WIN32 is not defined then
+the @link(TScanner) returns only tokens "@code(const LineEnding = #10;)"
+for the following code:
+@longcode# const LineEnding = {$ifdef WIN32} #13#10 {$else} #10 {$endif}; #
+
+Finally @link(TParser) uses an underlying @link(TScanner) and interprets
+the series of tokens, as e.g. "here I see a declaration of variable Foo,
+of type Integer". The Parser stores everything it reads in a @link(TPasUnit)
+instance.
+
+If you ever wrote a program that interprets a text language,
+you will see that there is nothing special here: We have a lexer
+(@link(TScanner), a simplified lexer in @link(TTokenizer))
+and a parser (@link(TParser)).
+
+It is important to note that pasdoc's parser is somewhat unusual,
+compared to "normal" parsers that are used e.g. in Pascal compilers.
+
+@orderedList(
+  @item(
+    Pasdoc's parser does not read the implementation section of a unit file
+    (although this may change some day, see
+    [http://pasdoc.sipsolutions.net/WantedFeaturesParsingImplementation]).)
+
+  @item(
+    Pasdoc's parser is "cheating": It does not really understand everything it
+    reads. E.g. the parameter section of a procedure declaration is parsed
+    "blindly", by simply reading tokens up to a matching closing
+    parenthesis. Such cheating obviously simplifies the parser
+    implementation, but it also makes pasdoc's parser "dumber",
+    see [http://pasdoc.sipsolutions.net/ToDoParser].)
+
+  @item(
+    Pasdoc's parser collects the comments before each declaration,
+    since these comments must be converted and placed in the final documentation
+    (while "normal" parsers usually treat comments as a meaningless
+    white-space).)
+)
+
+@section(1 SecStoring Storing)
+
+The unit @link(PasDoc_Items) provides a comfortable class hierarchy
+to store a parsed Pascal source tree. @link(TPasUnit) is a "root class"
+(container-wise), it contains references to all other items within a unit,
+every item is some instance of @link(TPasItem).
+
+@section(1 SecGenerators Generators)
+
+The last link in the chain are the generators. A generator uses the
+stored @link(TPasItem)
+tree and generates the final documentation. The base abstract class
+for a generator is @link(TDocGenerator), this provides some
+general mechanisms used by all generators. From @link(TDocGenerator)
+descend more specialized generator classes, like
+@link(TGenericHTMLDocGenerator), @link(THTMLDocGenerator),
+@link(TTexDocGenerator) and others.
+
+@section(1 SecNotes Notes)
+
+Note that the parser and the generators do not communicate with each
+other directly. The parser stores things in the @link(TPasItem) tree.
+Generators read and process the @link(TPasItem) tree.
+
+So the parser cannot do any stupid thing like messing with
+some HTML-specific or LaTeX-specific issues of generating documentation.
+And the generator cannot deal with parsing Pascal source code.
+
+Actually, this makes the implementation of the generator independent
+enough to be used in other cases, e.g. to generate
+an "introduction" file for the final documentation, like the one
+you are reading right now.
+
