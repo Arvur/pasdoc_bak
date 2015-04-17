@@ -1,3 +1,5 @@
+pasdoc_package.pas
+
 # Lazarus compiler-generated binaries (safe to delete)
 *.exe
 *.dll
