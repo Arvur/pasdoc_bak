@@ -1,3 +1,25 @@
+{
+  Copyright 1998-2014 PasDoc developers.
+
+  This file is part of "PasDoc".
+
+  "PasDoc" is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  "PasDoc" is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with "PasDoc"; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  ----------------------------------------------------------------------------
+}
+
 { @abstract(basic doc generator object)
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Ralf Junker (delphi@zeitungsjunge.de))
@@ -12,7 +34,7 @@
   @author(Ascanio Pressato)
   @author(Arno Garrels <first name.name@nospamgmx.de>)
   @created(30 Aug 1998)
-  @cvs($Date: 2013-06-23 20:17:03 +0200 (nie) $)
+  @cvs($Date: 2014-05-21 19:57:07 +0000 (Wed, 21 May 2014) $)
 
   @name contains the basic documentation generator object @link(TDocGenerator).
   It is not sufficient by itself but the basis for all generators that produce
@@ -95,16 +117,6 @@ const
   HighCreatedOverviewFile = High(TCreatedOverviewFile);
 
 type
-  { Result for @link(TDocGenerator.CreateStream) }
-  TCreateStreamResult = (
-    { normal result }
-    csCreated,
-    { if file exists this will be returned, unless overwrite is true }
-    csExisted,
-    { returned on error }
-    csError
-  );
-
   TLinkLook = (llDefault, llFull, llStripped);
   
   { This is used by @link(TDocGenerator.MakeItemLink) }
@@ -490,19 +502,19 @@ type
       HTML or a page number in Tex. }
     function CreateLink(const Item: TBaseItem): string; virtual;
 
-    { If @link(CurrentStream) still exists (<> nil), it is closed.
-      Then, a new output stream in the destination directory with given
-      name and file extension typical for this document format is created and
-      assigned to @link(CurrentStream).
-      No path or extension should therefore be in Name.
-      Typical values for Name would be 'Objects' or 'AllUnits'.
-      Returns true if creation was successful, false otherwise. }
-    function CreateStream(const AName: string; const AOverwrite: Boolean):
-      TCreateStreamResult; 
-{$IFDEF STRING_UNICODE} overload;
-    function CreateStream(const AName: string; const AOverwrite: Boolean;
-      ADstCodePage: LongWord): TCreateStreamResult; overload;
-{$ENDIF}
+    { Open output stream in the destination directory.
+      If @link(CurrentStream) still exists (<> nil), it is closed.
+      Then, a new output stream in the destination directory is created and
+      assigned to @link(CurrentStream). The file is overwritten if exists.
+      
+      Use this only for text files that you want to write using WriteXxx
+      methods of this class (like WriteConverted).
+      There's no point to use if for other files.
+      
+      Returns @true if creation was successful, @false otherwise.
+      When it returns @false, the error message was already shown by DoMessage. }
+    function CreateStream(const AName: string): Boolean; 
+    
     { Searches for an email address in String S. Searches for first appearance
       of the @@ character}
     function ExtractEmailAddress(s: string; out S1, S2, EmailAddress: string): Boolean;
@@ -1125,50 +1137,31 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-{$IFDEF STRING_UNICODE}
-function TDocGenerator.CreateStream(const AName: string;
-  const AOverwrite: Boolean; ADstCodePage: LongWord): TCreateStreamResult;
-begin
-  CloseStream;
-  DoMessage(4, pmtInformation, 'Creating output stream "' + AName + '".', []);
-  Result := csError;
-  if FileExists(DestinationDirectory + AName) and not AOverwrite then begin
-    Result := csExisted;
-  end else begin
-    try    
-      FCurrentStream := TStreamWriter.Create(DestinationDirectory+AName,
-                                             FALSE, FALSE, ADstCodePage);    
-      Result := csCreated;
-    except
-    end;
-  end;
-end;
- {$ENDIF}
-{ ---------------------------------------------------------------------------- }
 
-function TDocGenerator.CreateStream(const AName: string;
-  const AOverwrite: boolean): TCreateStreamResult;
+function TDocGenerator.CreateStream(const AName: string): Boolean;
+var
+  S: string;
 begin
-{$IFDEF STRING_UNICODE}
-  Result := CreateStream(AName, AOverwrite, 0);
-{$ELSE}
   CloseStream;
   DoMessage(4, pmtInformation, 'Creating output stream "' + AName + '".', []);
-  Result := csError;
-  if FileExists(DestinationDirectory + AName) and not AOverwrite then
-    Result := csExisted
-  else begin
-    try
-    {$IFDEF USE_BUFFERED_STREAM}
-      FCurrentStream := TBufferedStream.Create(DestinationDirectory+AName, fmCreate);
-    {$ELSE}
-      FCurrentStream := TFileStream.Create(DestinationDirectory+AName, fmCreate);
-    {$ENDIF}
-      Result := csCreated;
-    except
-    end;
-  end;  
-{$ENDIF}  
+  Result := false;
+  S := DestinationDirectory + AName;
+  try
+    FCurrentStream := 
+      {$IFDEF STRING_UNICODE}
+      TStreamWriter.Create(S, false, false, FLanguage.CodePage);
+      {$ELSE}
+        {$IFDEF USE_BUFFERED_STREAM}
+        TBufferedStream.Create(S, fmCreate);
+        {$ELSE}
+        TFileStream.Create(S, fmCreate);
+        {$ENDIF}
+      {$ENDIF}
+    Result := true;
+  except
+    on E: Exception do
+      DoMessage(1, pmtError, 'Could not create file "%s": %s', [S, E.Message]);
+  end;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -2755,12 +2748,7 @@ begin
   if Assigned(LNode) then
   begin
     OverviewFileName := OverviewFilesInfo[ofGraphVizClasses].BaseFileName  + '.dot';
-    if CreateStream(OverviewFileName, True) = csError then
-    begin
-      DoMessage(1, pmtError, 'Could not create output file "%s".', 
-        [OverviewFileName]);
-      Exit;
-    end;
+    if not CreateStream(OverviewFileName) then Exit;
     
     WriteDirect('DiGraph Classes {', true);
     while Assigned(LNode) do 
@@ -2793,12 +2781,7 @@ begin
   if not ObjectVectorIsNilOrEmpty(FUnits) then
   begin
     OverviewFileName := OverviewFilesInfo[ofGraphVizUses].BaseFileName + '.dot';
-    if CreateStream(OverviewFileName, True) = csError then 
-    begin
-      DoMessage(1, pmtError, 'Could not create output file "%s".', 
-        [OverviewFileName]);
-      Exit;
-    end;
+    if not CreateStream(OverviewFileName) then Exit;
     
     WriteDirect('DiGraph Uses {', true);
     for i := 0 to FUnits.Count-1 do 

@@ -1,5 +1,27 @@
+{
+  Copyright 1998-2014 PasDoc developers.
+
+  This file is part of "PasDoc".
+
+  "PasDoc" is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  "PasDoc" is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with "PasDoc"; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  ----------------------------------------------------------------------------
+}
+
 { @abstract(Provides Latex document generator object.)
-  @cvs($Date: 2011-08-08 09:32:30 +0200 (pon) $)
+  @cvs($Date: 2015-01-03 22:54:08 +0000 (Sat, 03 Jan 2015) $)
 
   Implements an object to generate latex documentation, overriding many of
   @link(TDocGenerator)'s virtual methods. }
@@ -612,15 +634,7 @@ begin
     OutputFileName := ProjectName + '.tex'
   else
     OutputFileName := 'docs.tex';
-  case CreateStream(OutputFileName, true) of
-    csError: begin
-      DoMessage(1, pmtError, 'Could not create doc file %s',[Outputfilename]);
-      Exit;
-    end;
-    csExisted: begin
-      Exit;
-    end;
-  end;
+  if not CreateStream(OutputFileName) then Exit;
   WriteStartOfDocument('');
   WriteIntroduction;
   WriteUnits(1);
@@ -1046,10 +1060,16 @@ procedure TTexDocGenerator.WriteItemLongDescription(const AItem: TPasItem;
     WriteDirect('',true);
   end;
 
-  procedure WriteHintDirective(const S: string);
+  procedure WriteHintDirective(const S: string; const Note: string = '');
+  var
+    Text: string;
   begin
-    WriteConverted(FLanguage.Translation[trWarning] + ': ' + S + '.'
-                     + LineEnding + LineEnding);
+    Text := FLanguage.Translation[trWarning] + ': ' + S;
+    if Note <> '' then
+      Text := Text + ': ' + Note else
+      Text := Text + '.';
+    Text := Text + LineEnding + LineEnding;
+    WriteConverted(Text);
   end;
 
 var
@@ -1061,7 +1081,7 @@ begin
   if not Assigned(AItem) then Exit;
 
   if AItem.IsDeprecated then
-    WriteHintDirective(FLanguage.Translation[trDeprecated]);
+    WriteHintDirective(FLanguage.Translation[trDeprecated], AItem.DeprecatedNote);
   if AItem.IsPlatformSpecific then
     WriteHintDirective(FLanguage.Translation[trPlatformSpecific]);
   if AItem.IsLibrarySpecific then

@@ -1,3 +1,25 @@
+{
+  Copyright 1998-2014 PasDoc developers.
+
+  This file is part of "PasDoc".
+
+  "PasDoc" is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  "PasDoc" is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with "PasDoc"; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  ----------------------------------------------------------------------------
+}
+
 { @abstract(Provides HTML document generator object.)
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Ralf Junker (delphi@zeitungsjunge.de))
@@ -13,7 +35,7 @@
   @author(Richard B. Winston <rbwinst@usgs.gov>)
   @author(Ascanio Pressato)
   @author(Arno Garrels <first name.name@nospamgmx.de>)
-  @cvs($Date: 2013-01-23 22:13:07 +0100 (śro) $)
+  @cvs($Date: 2015-01-03 22:54:08 +0000 (Sat, 03 Jan 2015) $)
 
   Implements an object to generate HTML documentation, overriding many of
   @link(TDocGenerator)'s virtual methods. }
@@ -804,20 +826,9 @@ procedure TGenericHTMLDocGenerator.WriteCIOs(HL: integer; c: TPasItems);
       Exit;
     end;
 
-  {$IFDEF STRING_UNICODE}
-    case CreateStream(ACio.OutputFileName, true, FLanguage.CodePage) of
-  {$ELSE}
-    case CreateStream(ACio.OutputFileName, true) of
-  {$ENDIF}
-      csError: begin
-          DoMessage(1, pmtError, 'Could not create Class/Interface/Object documentation file.', []);
-          Exit;
-        end;
-      csCreated: begin
-          DoMessage(3, pmtInformation, 'Creating Class/Interface/Object file for "%s"...', [ACio.Name]);
-          WriteCIO(HL, ACio);
-        end;
-    end;
+    if not CreateStream(ACio.OutputFileName) then Exit;
+    DoMessage(3, pmtInformation, 'Creating Class/Interface/Object file for "%s"...', [ACio.Name]);
+    WriteCIO(HL, ACio);
   end;
 
   procedure LocalWriteCios(const HL: Integer; const ACios: TPasItems);
@@ -1244,10 +1255,16 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
     WriteDirect('</p>');
   end;
 
-  procedure WriteHintDirective(const S: string);
+  procedure WriteHintDirective(const S: string; const Note: string = '');
+  var
+    Text: string;
   begin
     WriteDirect('<p class="hint_directive">');
-    WriteConverted(FLanguage.Translation[trWarning] + ': ' + S + '.');
+    Text := FLanguage.Translation[trWarning] + ': ' + S;
+    if Note <> '' then
+      Text := Text + ': ' + Note else
+      Text := Text + '.';
+    WriteConverted(Text);
     WriteDirect('</p>');
   end;
 
@@ -1260,7 +1277,7 @@ begin
   if not Assigned(AItem) then Exit;
   
   if AItem.IsDeprecated then
-    WriteHintDirective(FLanguage.Translation[trDeprecated]);
+    WriteHintDirective(FLanguage.Translation[trDeprecated], AItem.DeprecatedNote);
   if AItem.IsPlatformSpecific then
     WriteHintDirective(FLanguage.Translation[trPlatformSpecific]);
   if AItem.IsLibrarySpecific then
@@ -1351,19 +1368,8 @@ procedure TGenericHTMLDocGenerator.WriteOverviewFiles;
     BaseFileName, Headline: string;
   begin
     BaseFileName := OverviewFilesInfo[Overview].BaseFileName;
-{$IFDEF STRING_UNICODE}
-    Result := CreateStream(BaseFileName + GetFileExtension, True,
-                           FLanguage.CodePage) <> csError;
-{$ELSE}
-    Result := CreateStream(BaseFileName + GetFileExtension, True) <> csError;
-{$ENDIF}
-
-    if not Result then
-    begin
-      DoMessage(1, pmtError, 'Error: Could not create output file "' +
-        BaseFileName + '".', []);
-      Exit;
-    end;
+    Result := CreateStream(BaseFileName + GetFileExtension);
+    if not Result then Exit;
 
     DoMessage(3, pmtInformation, 'Writing overview file "' +
       BaseFileName + '" ...', []);
@@ -1879,16 +1885,8 @@ begin
       'skipped.', [U.Name]);
     Exit;
   end;
-{$IFDEF STRING_UNICODE}
-  case CreateStream(U.OutputFileName, true, FLanguage.CodePage) of
-{$ELSE}
-  case CreateStream(U.OutputFileName, true) of
-{$ENDIF}
-    csError: begin
-      DoMessage(1, pmtError, 'Could not create HTML unit doc file for unit %s.', [U.Name]);
-      Exit;
-    end;
-  end;
+  
+  if not CreateStream(U.OutputFileName) then Exit;
 
   SectionHeads[dsDescription] := FLanguage.Translation[trDescription];
   SectionHeads[dsUses] := FLanguage.Translation[trUses];
@@ -2042,17 +2040,9 @@ procedure TGenericHTMLDocGenerator.WriteVisibilityLegendFile;
 const
   Filename = 'legend';
 begin
-{$IFDEF STRING_UNICODE}
-  if CreateStream(Filename + GetFileextension, True,
-                  FLanguage.CodePage) = csError then
-{$ELSE}
-  if CreateStream(Filename + GetFileextension, True) = csError then
-{$ENDIF}
-    begin
-      DoMessage(1, pmtError, 'Could not create output file "%s".',
-        [Filename + GetFileExtension]);
-      Abort;
-    end;
+  if not CreateStream(Filename + GetFileextension) then
+    Abort;
+  
   try
     WriteStartOfDocument(FLanguage.Translation[trLegend]);
 
@@ -2131,29 +2121,13 @@ begin
 end;
 
 procedure TGenericHTMLDocGenerator.WriteBinaryFiles;
-
-  procedure WriteGifFile(const Img: array of byte; const Filename: string);
-  begin
-    if CreateStream(Filename, True) = csError 
-      then begin
-        DoMessage(1, pmtError, 'Could not create output file "%s".', [Filename]);
-      Exit;
-    end;
-    CurrentStream.Write(img[0], High(img)+1);
-    CloseStream;
-  end;
-
-var
-  PasdocCssFileName: string;
 begin
-  WriteGifFile(img_automated, 'automated.gif');
-  WriteGifFile(img_private, 'private.gif');
-  WriteGifFile(img_protected, 'protected.gif');
-  WriteGifFile(img_public, 'public.gif');
-  WriteGifFile(img_published, 'published.gif');
-
-  PasdocCssFileName := DestinationDirectory + 'pasdoc.css';
-  StringToFile(PasdocCssFileName, CSS);
+  DataToFile(DestinationDirectory + 'automated.gif', img_automated);
+  DataToFile(DestinationDirectory + 'private.gif'  , img_private  ); 
+  DataToFile(DestinationDirectory + 'protected.gif', img_protected);
+  DataToFile(DestinationDirectory + 'public.gif'   , img_public   );
+  DataToFile(DestinationDirectory + 'published.gif', img_published);
+  StringToFile(DestinationDirectory + 'pasdoc.css', CSS);
 end;
 
 procedure TGenericHTMLDocGenerator.WriteIndex;
@@ -2279,17 +2253,7 @@ procedure TGenericHTMLDocGenerator.WriteExternalCore(
 var
   HL: integer;
 begin
-{$IFDEF STRING_UNICODE}
-  case CreateStream(ExternalItem.OutputFileName, true, FLanguage.CodePage) of
-{$ELSE}
-  case CreateStream(ExternalItem.OutputFileName, true) of
-{$ENDIF}
-    csError: begin
-      DoMessage(1, pmtError, 'Could not create HTML unit doc file '
-        + 'for the %s file %s.', [FLanguage.Translation[Id], ExternalItem.Name]);
-      Exit;
-    end;
-  end;
+  if not CreateStream(ExternalItem.OutputFileName) then Exit;
 
   WriteStartOfDocument(ExternalItem.ShortTitle);
 

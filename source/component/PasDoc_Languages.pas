@@ -1,3 +1,25 @@
+{
+  Copyright 1998-2014 PasDoc developers.
+
+  This file is part of "PasDoc".
+
+  "PasDoc" is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  "PasDoc" is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with "PasDoc"; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  ----------------------------------------------------------------------------
+}
+
 { @abstract(PasDoc language definitions and translations.)
   @author(Johannes Berg <johannes AT sipsolutions.de>)
   @author(Ralf Junker <delphi AT zeitungsjunge.de>)
@@ -14,6 +36,7 @@
   @author(Peter Thörnqvist <pt AT timemetrics.se> (Swedish translation))
   @author(Rodrigo Urubatan Ferreira Jardim <rodrigo AT netscape.net> (Brasilian translation))
   @author(Alexandre da Silva <simpsomboy AT gmail.com> (Brasilian translation - Update))
+  @author(Alexsander da Rosa <alex AT rednaxel.com> (Brasilian translation - UTF8))
   @author(Vitaly Kovalenko <v_l_kovalenko AT alsy.by> (Russian translation))
   @author(Grzegorz Skoczylas <gskoczylas AT rekord.pl> (corrected Polish translation))
   @author(Jónás Gergõ <jonas.gergo AT ch...> (Hungarian translation))
@@ -63,7 +86,8 @@ type
 {$ELSE}
   TLanguageID = (
     lgBosnian,
-    lgBrazilian,
+    lgBrazilian_1252,
+    lgBrazilian_utf8,
     lgBulgarian,
     lgCatalan,
     lgChinese_gb2312,
@@ -351,9 +375,10 @@ const
   aHungarian          : {$I lang\PasDoc_Languages_Hungarian_utf8_bom.inc}
   aCzech              : {$I lang\PasDoc_Languages_Czech_utf8_bom.inc}
 {$ELSE}
-  aEnglish            : {$I lang\PasDoc_Languages_English_1252.inc}
+  aEnglish            : {$I lang\PasDoc_Languages_English_utf8.inc}
   aBosnian            : {$I lang\PasDoc_Languages_Bosnia_1250.inc}
-  aBrazilian          : {$I lang\PasDoc_Languages_Brasilian_1252.inc}
+  aBrazilian_1252     : {$I lang\PasDoc_Languages_Brasilian_1252.inc}
+  aBrazilian_utf8     : {$I lang\PasDoc_Languages_Brasilian_utf8.inc}
   aBulgarian          : {$I lang\PasDoc_Languages_Bulgarian_utf8.inc}
   aCatalan            : {$I lang\PasDoc_Languages_Catalan_1252.inc}
   aChinese_gb2312     : {$I lang\PasDoc_Languages_Chinese_gb2312.inc}
@@ -407,14 +432,15 @@ const
 {$ELSE}
   LANGUAGE_ARRAY: array[TLanguageID] of TLanguageRecord = (
     (Table: @aBosnian; Name: 'Bosnian (Codepage 1250)'; Syntax: 'ba'; CharSet: 'windows-1250'; AspellLanguage: 'bs'),
-    (Table: @aBrazilian; Name: 'Brazilian (Codepage 1252)'; Syntax: 'br'; CharSet: 'windows-1252'; AspellLanguage: 'pt'),
+    (Table: @aBrazilian_1252; Name: 'Brazilian (Codepage 1252)'; Syntax: 'br.1252'; CharSet: 'windows-1252'; AspellLanguage: 'pt'),
+    (Table: @aBrazilian_utf8; Name: 'Brazilian (Codepage UTF-8)'; Syntax: 'br.utf8'; CharSet: 'utf-8'; AspellLanguage: 'pt'),
     (Table: @aBulgarian; Name: 'Bulgarian (Codepage UTF-8)'; Syntax: 'bg'; CharSet: 'utf-8'; AspellLanguage: ''),
     (Table: @aCatalan; Name: 'Catalan'; Syntax: 'ct'; CharSet: 'windows-1252'; AspellLanguage: 'ca'),
     (Table: @aChinese_gb2312; Name: 'Chinese (Simple, gb2312)'; Syntax: 'gb2312'; CharSet: 'gb2312'; AspellLanguage: 'zh'),
     (Table: @aCroatian; Name: 'Croatian'; Syntax: 'hr'; CharSet: 'windows-1250'; AspellLanguage: 'hr'),    
     (Table: @aDanish; Name: 'Danish'; Syntax: 'dk'; CharSet: 'iso-8859-15'; AspellLanguage: 'da'),
     (Table: @aDutch; Name: 'Dutch'; Syntax: 'nl'; CharSet: 'iso-8859-15'; AspellLanguage: ''),
-    (Table: @aEnglish; Name: 'English'; Syntax: 'en'; CharSet: 'iso-8859-1'; AspellLanguage: ''),
+    (Table: @aEnglish; Name: 'English'; Syntax: 'en'; CharSet: 'utf-8'; AspellLanguage: ''),
     (Table: @aFrench_ISO_8859_15; Name: 'French (iso-8859-15)'; Syntax: 'fr'; CharSet: 'iso-8859-15'; AspellLanguage: ''),
     (Table: @aFrench_UTF_8; Name: 'French (UTF-8)'; Syntax: 'fr.utf8'; CharSet: 'utf-8'; AspellLanguage: ''),    
     (Table: @aGerman; Name: 'German'; Syntax: 'de'; CharSet: 'iso-8859-15'; AspellLanguage: ''),

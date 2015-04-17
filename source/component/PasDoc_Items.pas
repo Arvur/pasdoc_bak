@@ -1,6 +1,28 @@
+{
+  Copyright 1998-2014 PasDoc developers.
+
+  This file is part of "PasDoc".
+
+  "PasDoc" is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  "PasDoc" is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with "PasDoc"; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  ----------------------------------------------------------------------------
+}
+
 { @abstract(defines all items that can appear within a Pascal unit's interface)
   @created(11 Mar 1999)
-  @cvs($Date: 2013-07-14 17:37:54 +0200 (nie) $)
+  @cvs($Date: 2015-01-03 22:54:08 +0000 (Sat, 03 Jan 2015) $)
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Ralf Junker (delphi@zeitungsjunge.de))
   @author(Marco Schmidt (marcoschmidt@geocities.com))
@@ -269,7 +291,7 @@ type
 
     { Returns the qualified name of the item.
       This is intended to return a concise and not ambigous name.
-      E.g. in case of TPasItem it is overriden to return Name qualified
+      E.g. in case of TPasItem it is overridden to return Name qualified
       by class name and unit name. 
       
       In this class this simply returns Name. }
@@ -314,6 +336,7 @@ type
     FIsDeprecated: boolean;
     FIsPlatformSpecific: boolean;
     FIsLibrarySpecific: boolean;
+    FDeprecatedNote: string;
     FFullDeclaration: string;
     FSeeAlso: TStringPairVector;
     FCachedUnitRelativeQualifiedName: string; //< do not serialize
@@ -426,6 +449,11 @@ type
       This is decided by "library" hint directive after an item. }
     property IsLibrarySpecific: boolean 
       read FIsLibrarySpecific write FIsLibrarySpecific;   
+      
+    { Deprecation note, specified as a string after "deprecated" directive.
+      Empty if none, always empty if @link(IsDeprecated) is @false. }
+    property DeprecatedNote: string
+      read FDeprecatedNote write FDeprecatedNote;
       
     { This recursively sorts all items inside this item,
       and all items inside these items, etc.
@@ -1557,6 +1585,7 @@ begin
   ASource.Read(FIsDeprecated, SizeOf(FIsDeprecated));
   ASource.Read(FIsPlatformSpecific, SizeOf(FIsPlatformSpecific));
   ASource.Read(FIsLibrarySpecific, SizeOf(FIsLibrarySpecific));
+  DeprecatedNote := LoadStringFromStream(ASource);
   FullDeclaration := LoadStringFromStream(ASource);
   Attributes.LoadFromBinaryStream(ASource);
   
@@ -1574,6 +1603,7 @@ begin
   ADestination.Write(FIsDeprecated, SizeOf(FIsDeprecated));
   ADestination.Write(FIsPlatformSpecific, SizeOf(FIsPlatformSpecific));
   ADestination.Write(FIsLibrarySpecific, SizeOf(FIsLibrarySpecific));
+  SaveStringToStream(DeprecatedNote, ADestination);
   SaveStringToStream(FullDeclaration, ADestination);
   FAttributes.SaveToBinaryStream(ADestination);
   

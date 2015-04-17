@@ -1,10 +1,32 @@
+{
+  Copyright 1998-2014 PasDoc developers.
+
+  This file is part of "PasDoc".
+
+  "PasDoc" is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  "PasDoc" is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with "PasDoc"; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  ----------------------------------------------------------------------------
+}
+
 { @abstract(Parse ObjectPascal code.)
   @author(Ralf Junker (delphi@zeitungsjunge.de))
   @author(Marco Schmidt (marcoschmidt@geocities.com))
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Michalis Kamburelis)
   @author(Arno Garrels <first name.name@nospamgmx.de>)
-  @cvs($Date: 2012-09-08 23:55:49 +0200 (sob) $)
+  @cvs($Date: 2015-01-11 07:30:31 +0000 (Sun, 11 Jan 2015) $)
 
   Contains the @link(TParser) object, which can parse an ObjectPascal
   code, and put the collected information into the TPasUnit instance. }
@@ -94,8 +116,10 @@ type
     
     @unorderedList(
       @item(Of every TPasItem :
-        Name, RawDescription, Visibility, IsDeprecated, IsPlatformSpecific, 
-        IsLibrarySpecific, FullDeclararation (note: for now not all items
+        Name, RawDescription, Visibility,
+        IsDeprecated, DeprecatedNote,
+        IsPlatformSpecific, IsLibrarySpecific,
+        FullDeclararation (note: for now not all items
         get sensible FullDeclararation, but the intention is to improve this
         over time; see @link(TPasItem.FullDeclaration) to know where 
         FullDeclararation is available now).
@@ -205,6 +229,12 @@ type
       (Does @italic(not) append them to WhitespaceCollector,
       it @italic(sets) WhitespaceCollector to them, deleting previous
       WhitespaceCollector value.)
+      The overloaded version with WhitespaceCollectorItem
+      @italic(appends) whitespace to WhitespaceCollectorItem.FullDeclaration
+      (unless WhitespaceCollectorItem is @nil).
+      Remember that whitespace is always consumed --- unlike the token itself
+      (which is not "eaten" by peek operation),
+      whitespace is consumed, so you @italic(must) capture it here, or lose it.
       
       Comments are collected to [Is]LastCommentXxx properties, so that you can
       use GetLastComment.
@@ -219,6 +249,7 @@ type
       Always returns something non-nil (will raise exception in case
       of problems, e.g. when stream ended). }
     function PeekNextToken(out WhitespaceCollector: string): TToken; overload;
+    function PeekNextToken(const WhitespaceCollectorItem: TPasItem): TToken; overload;
     
     { Same thing as PeekNextToken(Dummy) }
     function PeekNextToken: TToken; overload;
@@ -228,13 +259,16 @@ type
     function GetNextToken(out WhitespaceCollector: string): TToken; overload;
     
     { Just like @link(PeekNextToken), but returned token is already consumed.
+    
       Moreover, whitespace collected is appended to
       WhitespaceCollectorItem.FullDeclaration
       (does not delete previous WhitespaceCollectorItem.FullDeclaration value, 
-      it only appends to it). }
-    function GetNextToken(WhitespaceCollectorItem: TPasItem): TToken; overload;
+      it only appends to it).
+      Unless WhitespaceCollectorItem is @nil. }
+    function GetNextToken(const WhitespaceCollectorItem: TPasItem): TToken; overload;
     
     function GetNextToken: TToken; overload;
+    function GetNextTokenNotAttribute(const WhitespaceCollectorItem: TPasItem): TToken; overload;
     
     { This does @link(GetNextToken), then checks is it a ATokenType
       (using @link(CheckToken)), then frees the token.
@@ -372,9 +406,10 @@ type
       that this case clause terminates, without a semicolon.
 
       If you pass Item <> nil then all read data will be 
-      appended to Item.FullDeclaration. Also Item.IsLibrarySpecific,
-      Item.IsPlatformSpecific and Item.IsDeprecated will be set to true
-      if appropriate hint directive will occur in source file. }    
+      appended to Item.FullDeclaration. Also hint directives
+      (Item.IsLibrarySpecific, Item.IsPlatformSpecific, Item.IsDeprecated
+      Item.DeprecatedNote) may be set (to true/non-empty) if appropriate
+      hint directive will occur in source file. }
     procedure SkipDeclaration(const Item: TPasItem; IsInRecordCase: boolean);
     
     procedure SetCommentMarkers(const Value: TStringList);
@@ -623,20 +658,26 @@ begin
   Scanner.ConsumeToken;
 end;
 
-function TParser.GetNextToken(WhitespaceCollectorItem: TPasItem): TToken;
-var
-  WhitespaceCollector: string;
+function TParser.GetNextToken(const WhitespaceCollectorItem: TPasItem): TToken;
 begin
-  Result := GetNextToken(WhitespaceCollector);
-  WhitespaceCollectorItem.FullDeclaration := 
-    WhitespaceCollectorItem.FullDeclaration + WhitespaceCollector;
+  Result := PeekNextToken(WhitespaceCollectorItem);
+  Scanner.ConsumeToken;
 end;
 
 function TParser.GetNextToken: TToken;
-var
-  LDummy: string;
 begin
-  Result := GetNextToken(LDummy);
+  Result := PeekNextToken;
+  Scanner.ConsumeToken;
+end;
+
+function TParser.GetNextTokenNotAttribute(const WhitespaceCollectorItem: TPasItem): TToken;
+var
+  OldAttributeIsPossible: Boolean;
+begin
+  OldAttributeIsPossible := AttributeIsPossible;
+  AttributeIsPossible := False;
+  Result := GetNextToken(WhitespaceCollectorItem);
+  AttributeIsPossible := OldAttributeIsPossible;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -749,9 +790,10 @@ procedure TParser.ParseCDFP(out M: TPasMethod;
   
 var
   t: TToken;
-  InvalidType: boolean;
+  InvalidType, WasDeprecatedDirective: boolean;
 begin
   t := nil;
+  WasDeprecatedDirective := false;
   M := TPasMethod.Create;
   try
     M.RawDescriptionInfo^ := RawDescriptionInfo;
@@ -820,7 +862,8 @@ begin
             * Deprecated might be followed by a string constant since D2010. }
           SD_EXTERNAL, SD_MESSAGE, SD_NAME, SD_DEPRECATED:
             begin
-              M.IsDeprecated := t.Info.StandardDirective = SD_DEPRECATED;
+              WasDeprecatedDirective := t.Info.StandardDirective = SD_DEPRECATED;
+              M.IsDeprecated := M.IsDeprecated or WasDeprecatedDirective;
               M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
               FreeAndNil(t);
 
@@ -846,6 +889,14 @@ begin
                         Break;
                       end;
                   end;
+                if WasDeprecatedDirective then
+                begin
+                  if T.MyType = TOK_STRING then
+                    M.DeprecatedNote := M.DeprecatedNote + T.StringContent else
+                    { end WasDeprecatedDirective on non-string token, summing
+                      all previous string tokens into M.DeprecatedNote }
+                    WasDeprecatedDirective := false;
+                end;
                 M.FullDeclaration := M.FullDeclaration + ' ' + t.Data;
                 FreeAndNil(t);
               until False;
@@ -950,15 +1001,16 @@ var
   var
     EndLevel, PLevel: Integer;
     IsSemicolon: Boolean;
+    WhitespaceCollectorToAdd: string;
   begin
     EndLevel := 0;
     PLevel := 0;
     Result := False;
     {AG}
     repeat
-      t := GetNextToken(WhitespaceCollector);
+      t := GetNextToken(i);
+      WhitespaceCollectorToAdd := '';
       try
-        i.FullDeclaration := i.FullDeclaration + WhitespaceCollector;
         case t.MyType of
           TOK_SYMBOL:
             case t.Info.SymbolType of
@@ -980,7 +1032,19 @@ var
             SD_PLATFORM:
               i.IsPlatformSpecific := true;
             SD_DEPRECATED:
-              i.IsDeprecated := true;
+              begin
+                i.IsDeprecated := true;
+                while PeekNextToken(WhitespaceCollectorToAdd).MyType = TOK_STRING do
+                begin
+                  { consume the following string as DeprecatedNote }
+                  i.FullDeclaration := i.FullDeclaration + t.Data + WhitespaceCollectorToAdd;
+                  FreeAndNil(t);
+                  t := GetNextToken(i);
+                  Assert(T.MyType = TOK_STRING); // T is now the same thing we saw with PeekNextToken
+                  i.DeprecatedNote := i.DeprecatedNote + t.StringContent;
+                end;
+                { otherwise WhitespaceCollectorToAdd will be added later }
+              end;
           end;
         end;
         IsSemicolon := t.IsSymbol(SYM_SEMICOLON);
@@ -995,7 +1059,7 @@ var
           Scanner.UnGetToken(t);
           Exit;
         end;
-        i.FullDeclaration := i.FullDeclaration + t.Data;
+        i.FullDeclaration := i.FullDeclaration + t.Data + WhitespaceCollectorToAdd;
         t.Free;
       except
         t.Free;
@@ -1250,12 +1314,13 @@ begin
     ItemsForNextBackComment.ClearAndAdd(P);
   
     { Is this only a redeclaration of property from ancestor
-      (to e.g. change it's visibility) }
+      (to e.g. change it's visibility, or add a hint directive) }
     t := GetNextToken(P);
     if t.IsSymbol(SYM_SEMICOLON) then
     begin
       p.FullDeclaration := p.FullDeclaration + ';';
       FreeAndNil(t);
+      ParseHintDirectives(P, true, true);
       Exit;
     end;
 
@@ -1986,6 +2051,7 @@ begin
               + ' ' + NewItem.FullDeclaration;
           end;
           NewItem.IsDeprecated := ItemCollector.IsDeprecated;
+          NewItem.DeprecatedNote := ItemCollector.DeprecatedNote;
           NewItem.IsPlatformSpecific := ItemCollector.IsPlatformSpecific;
           NewItem.IsLibrarySpecific := ItemCollector.IsLibrarySpecific;
         end;
@@ -2014,20 +2080,14 @@ var
   IsSemicolon: Boolean;
   PLevel: Integer;
   t: TToken;
-  WhitespaceCollector: string;
-  oldAttributeIsPossible: Boolean;
+  WhitespaceCollectorToAdd: string;
 begin
   EndLevel := 0;
   PLevel := 0;
   repeat
-    oldAttributeIsPossible := AttributeIsPossible;
-    AttributeIsPossible := False;
-    t := GetNextToken(WhitespaceCollector);
-    AttributeIsPossible := oldAttributeIsPossible;
+    WhitespaceCollectorToAdd := '';
+    t := GetNextTokenNotAttribute(Item);
     try
-      if Assigned(Item) then begin
-        Item.FullDeclaration := Item.FullDeclaration + WhitespaceCollector;
-      end;
       case t.MyType of
         TOK_SYMBOL:
           case t.Info.SymbolType of
@@ -2046,7 +2106,23 @@ begin
             SD_PLATFORM:
               if Assigned(Item) then Item.IsPlatformSpecific := true;
             SD_DEPRECATED:
-              if Assigned(Item) then Item.IsDeprecated := true;
+              begin
+                if Assigned(Item) then
+                  Item.IsDeprecated := true;
+                while PeekNextToken(WhitespaceCollectorToAdd).MyType = TOK_STRING do
+                begin
+                  { consume the following string as DeprecatedNote }
+                  if Assigned(Item) then
+                    Item.FullDeclaration := Item.FullDeclaration + t.Data + WhitespaceCollectorToAdd;
+                  FreeAndNil(t);
+                  t := GetNextTokenNotAttribute(Item);
+                  if Assigned(Item) then
+                  begin
+                    Assert(T.MyType = TOK_STRING); // T is now the same thing we saw with PeekNextToken
+                    Item.DeprecatedNote := Item.DeprecatedNote + t.StringContent;
+                  end;
+                end;
+              end;
           end;
       end;
       IsSemicolon := t.IsSymbol(SYM_SEMICOLON);
@@ -2062,7 +2138,7 @@ begin
         Exit;
       end;
 
-      if Assigned(Item) then Item.FullDeclaration := Item.FullDeclaration + t.Data;
+      if Assigned(Item) then Item.FullDeclaration := Item.FullDeclaration + t.Data + WhitespaceCollectorToAdd;
 
       FreeAndNil(t);
     except
@@ -2288,7 +2364,7 @@ begin
             if ItemsForNextBackComment.PasItemAt[i].RawDescription <> '' then
               DoMessage(1, pmtWarning,
                 '%s: Item %s already has one description, now it''s ' +
-                'overriden by back-comment (comment starting with "<"): "%s"',
+                'overridden by back-comment (comment starting with "<"): "%s"',
                 [ Scanner.GetStreamInfo,
                   ItemsForNextBackComment.PasItemAt[i].QualifiedName,
                   TCommentInfo.Content]);
@@ -2346,20 +2422,35 @@ begin
   Result := PeekNextToken(Dummy);
 end;
 
+function TParser.PeekNextToken(const WhitespaceCollectorItem: TPasItem): TToken;
+var
+  WhitespaceCollector: string;
+begin
+  Result := PeekNextToken(WhitespaceCollector);
+  if Assigned(WhitespaceCollectorItem) then
+    WhitespaceCollectorItem.FullDeclaration :=
+      WhitespaceCollectorItem.FullDeclaration + WhitespaceCollector;
+end;
+
 { ------------------------------------------------------------ }
 
 procedure TParser.ParseHintDirectives(Item: TPasItem;
   const ConsumeFollowingSemicolon, ExtendFullDeclaration: boolean);
 var
   T: TToken;
+  WasDeprecatedDirective: boolean;
 begin
   repeat
+    WasDeprecatedDirective := false;
     T := PeekNextToken;
     
     if T.IsStandardDirective(SD_PLATFORM) then
       Item.IsPlatformSpecific := true else
     if T.IsStandardDirective(SD_DEPRECATED) then
-      Item.IsDeprecated := true else
+    begin
+      Item.IsDeprecated := true;
+      WasDeprecatedDirective := true;
+    end else
     if T.IsKeyWord(KEY_LIBRARY) then
       Item.IsLibrarySpecific := true else
       break;
@@ -2368,6 +2459,19 @@ begin
       Item.FullDeclaration := Item.FullDeclaration + ' ' + T.Data;
     Scanner.ConsumeToken;
     FreeAndNil(T);
+
+    if WasDeprecatedDirective then
+    begin
+      while PeekNextToken.MyType = TOK_STRING do
+      begin
+        T := PeekNextToken;
+        if ExtendFullDeclaration then
+          Item.FullDeclaration := Item.FullDeclaration + ' ' + T.Data;
+        Item.DeprecatedNote := Item.DeprecatedNote + T.StringContent;
+        Scanner.ConsumeToken;
+        FreeAndNil(T);
+      end;
+    end;
 
     if ConsumeFollowingSemicolon then
     begin

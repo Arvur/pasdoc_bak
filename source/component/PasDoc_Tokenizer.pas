@@ -1,10 +1,32 @@
 {
+  Copyright 1998-2014 PasDoc developers.
+
+  This file is part of "PasDoc".
+
+  "PasDoc" is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  "PasDoc" is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with "PasDoc"; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  ----------------------------------------------------------------------------
+}
+
+{
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Ralf Junker (delphi@zeitungsjunge.de))
   @author(Marco Schmidt (marcoschmidt@geocities.com))
   @author(Michalis Kamburelis)
   @author(Arno Garrels <first name.name@nospamgmx.de>)
-  @abstract(Provides simplified Pascal tokenizer.)
+  @abstract(Simple Pascal tokenizer.)
 
 The @link(TTokenizer) object creates @link(TToken) objects (tokens) for the
 Pascal programming language from a character input stream.
@@ -240,6 +262,10 @@ type
       This is the text within the comment @italic(without) comment delimiters. 
       For TOK_DIRECTIVE you can safely assume that CommentContent[1] = '$'. }
     CommentContent: string;
+    
+    { Contents of the string token, that is: the value of the string literal.
+      D only when MyType is TOK_STRING. }
+    StringContent: string;
     
     { Create a token of and assign the argument token type to @link(MyType) }
     constructor Create(const TT: TTokenType);
@@ -745,7 +771,19 @@ begin
         QuoteChar:
           ReadLiteralString(Result);
         '#':
-          ReadToken(c, CharOther, TOK_STRING, Result);
+          if ReadToken(c, CharOther, TOK_STRING, Result) then
+          begin
+            try
+              { Note that StrToInt automatically handles hex characters when 
+                number starts from $. So below will automatically work for them. }
+              Result.StringContent := Chr(StrToInt(SEnding(Result.Data, 2)));
+            except 
+              { In case of EConvertError, make a warning and continue.
+                Result.StringContent will remain empty, which isn't a real problem. }
+              on E: EConvertError do
+                DoMessage(2, pmtWarning, 'Cannot convert string character code to int: %s', [Result.Data]);
+            end;
+          end;
         '{': begin
             Result := ReadCommentType1;
             CheckForDirective(Result);
@@ -1043,6 +1081,11 @@ begin
     else begin
       t.Data := t.Data + c;
     end;
+    { Note that, because of logic above, this will append only ONE apostrophe 
+      when reading two apostrophes in source code.
+      Checking Finished prevents adding the ending apostrophe. }
+    if not Finished then
+      T.StringContent := T.StringContent + c;
   until Finished;
   ReadLiteralString := True;
 end;

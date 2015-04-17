@@ -1,6 +1,28 @@
+{
+  Copyright 1998-2014 PasDoc developers.
+
+  This file is part of "PasDoc".
+
+  "PasDoc" is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  "PasDoc" is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with "PasDoc"; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  ----------------------------------------------------------------------------
+}
+
 { @abstract(The @name unit --- easing command line parsing)
   @author(Johannes Berg <johannes@sipsolutions.de>)
-  @cvs($Date: 2006-11-15 07:12:34 +0100 (śro) $)
+  @cvs($Date: 2014-05-21 19:57:07 +0000 (Wed, 21 May 2014) $)
 
   To use this unit, create an object of @link(TOptionParser) and add options to
   it, each option descends from @link(TOption).

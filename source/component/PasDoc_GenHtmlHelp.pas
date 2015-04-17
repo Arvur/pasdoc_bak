@@ -1,3 +1,26 @@
+{
+  Copyright 1998-2014 PasDoc developers.
+
+  This file is part of "PasDoc".
+
+  "PasDoc" is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  "PasDoc" is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with "PasDoc"; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  ----------------------------------------------------------------------------
+}
+
+{ @abstract(Generate HtmlHelp output.) }
 unit PasDoc_GenHtmlHelp;
 
 {$I pasdoc_defines.inc}
@@ -425,11 +448,7 @@ begin
     Units is assigned and Units.Count > 0
     No need to test this again. }
 
-  if CreateStream(ProjectName + '.hhc', True) = csError then begin
-    DoMessage(1, pmtError, 'Could not create HtmlHelp Content file "%s.hhc' +
-      '".', [ProjectName]);
-    Exit;
-  end;
+  if not CreateStream(ProjectName + '.hhc') then Exit;
   DoMessage(2, pmtInformation, 'Writing HtmlHelp Content file "' + ProjectName
     + '"...', []);
 
@@ -523,11 +542,7 @@ begin
     c.CopyItems(PU.FuncsProcs);
   end;
 
-  if CreateStream(ProjectName + '.hhk', True) = csError then begin
-    DoMessage(1, pmtError, 'Could not create HtmlHelp Index file "%s.hhk' +
-      '".', [ProjectName]);
-    Exit;
-  end;
+  if not CreateStream(ProjectName + '.hhk') then Exit;
   DoMessage(2, pmtInformation, 'Writing HtmlHelp Index file "%s"...',
     [ProjectName]);
 
@@ -600,11 +615,7 @@ begin
   CloseStream;
 
   // Create a HTML Help Project File
-  if CreateStream(ProjectName + '.hhp', True) = csError then begin
-    DoMessage(1, pmtError, 'Could not create HtmlHelp Project file "%s.hhp' +
-      '".', [ProjectName]);
-    Exit;
-  end;
+  if not CreateStream(ProjectName + '.hhp') then Exit;
   DoMessage(3, pmtInformation, 'Writing Html Help Project file "%s"...',
     [ProjectName]);
 

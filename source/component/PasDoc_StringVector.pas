@@ -1,8 +1,30 @@
 {
-  @cvs($Date: 2011-08-08 09:32:30 +0200 (pon) $)
+  Copyright 1998-2014 PasDoc developers.
+
+  This file is part of "PasDoc".
+
+  "PasDoc" is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  "PasDoc" is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with "PasDoc"; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  ----------------------------------------------------------------------------
+}
+
+{
+  @cvs($Date: 2014-05-21 19:57:07 +0000 (Wed, 21 May 2014) $)
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Michalis Kamburelis)
-  @abstract(string vector --- based on TStringList)
+  @abstract(String vector based on TStringList.)
   The string vector is based on TStringList and simply exports
   a few extra functions - I did this so I didn't have to change
   so much old code, this has only little additional
@@ -18,7 +40,6 @@ uses
   Classes;
 
 type
-  TIterateFunc = function(const AString: string): string;
   TStringVector = class(TStringList)
   public
     { This is the same thing as Items[0] }
@@ -29,7 +50,6 @@ type
     procedure RemoveAllNamesCI(const AName: string);
     function ExistsNameCI(const AName: string): boolean;
     function IsEmpty: boolean;
-    procedure Iterate(const AItFunc: TIterateFunc);
     function AddNotExisting(const AString: string): Integer;
 
     { Load from a stream using the binary format.
@@ -110,15 +130,6 @@ end;
 function TStringVector.IsEmpty: boolean;
 begin
   Result := Count = 0;
-end;
-
-procedure TStringVector.Iterate(const AItFunc: TIterateFunc);
-var
-  i: Integer;
-begin
-  for i := 0 to count - 1 do begin
-    Strings[i] := AItFunc(Strings[i]);
-  end;
 end;
 
 procedure TStringVector.LoadFromTextFileAdd(

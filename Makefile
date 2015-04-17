@@ -22,10 +22,14 @@ INCLUDE_DIRS := ./source/component ./source/component/images
 FILE := ./source/console/pasdoc.dpr
 
 # Base directory where binaries will go
+ifndef BINDIR
 BINDIR := bin
+endif
 
 # Base directory where libs, units, objects files will go
+ifndef OUTDIR
 OUTDIR := lib
+endif
 
 # The following is for creating the final package, comment out
 # if that particular section is not used.
@@ -264,6 +268,11 @@ build-vpc-os2: make-dirs
 build-pascal_pre_proc: make-dirs
 	$(FPC_DEFAULT) $(FPC_DEBUG_FLAGS) ./source/tools/pascal_pre_proc.dpr
 
+build-gui:
+	lazbuild $(LAZBUILD_OPTIONS) source/packages/lazarus/pasdoc_package.lpk
+	lazbuild $(LAZBUILD_OPTIONS) source/gui/pasdoc_gui.lpi
+	strip source/gui/pasdoc_gui$(EXE)
+
 ############################################################################
 # Help targets
 ############################################################################
@@ -306,6 +315,9 @@ help:
 	@echo "    FPC_<os/arch> points to a compiler that produces"
 	@echo "    a binary for given <os/arch>. So if you want to cross-compile"
 	@echo "    with FPC, make sure to adjust these variables accordingly."
+	@echo
+	@echo "  build-gui:"
+	@echo "    Compile pasdoc_gui with lazbuild (Lazarus build tool)."
 	@echo
 	@echo "  clean:"
 	@echo "    Clean files produced during compilation."
@@ -366,9 +378,7 @@ ifdef DOCFILES
 	cp -R $(DOCFILES) $(PACKAGEDIR)$(PATHSEP)docs
 endif
 ifdef ADD_PASDOC_GUI
-	lazbuild $(LAZBUILD_OPTIONS) source/packages/lazarus/pasdoc_package.lpk
-	lazbuild $(LAZBUILD_OPTIONS) source/gui/pasdoc_gui.lpi
-	strip source/gui/pasdoc_gui$(EXE)
+	$(MAKE) build-gui
 ifdef PASDOC_GUI_BUNDLE
 # Lazarus by default places only a symlink inside Contents/MacOS/ .
 # For releae, we want to instead put binary directly inside Contents/MacOS/,

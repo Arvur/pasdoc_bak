@@ -1,27 +1,60 @@
+{
+  Copyright 1998-2014 PasDoc developers.
+
+  This file is part of "PasDoc".
+
+  "PasDoc" is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  "PasDoc" is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with "PasDoc"; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  ----------------------------------------------------------------------------
+}
+
 { @abstract(Helper unit for integrating tipue [http://www.tipue.com/]
   with pasdoc HTML output.) }
-
 unit PasDoc_Tipue;
 
 interface
 
 uses PasDoc_Utils, PasDoc_Items;
 
-{ Put this in <head> of page with search button. }
+{ Put this in <head> of every page with search button. }
 function TipueSearchButtonHead: string;
 
-{ Put this in content of some page ---
-  this will place a form with search button.
-  You will need to use Format to insert the localized word for "Search", e.g.:
-  Format(TipueSearchButton, ['Search'])
-  for English.}
 const
+  { Put this inside the page contents --- it will make a form with search button.
+    You will need to use Format to insert the localized word for "Search", e.g.:
+    Format(TipueSearchButton, ['Search'])
+    for English.}
   TipueSearchButton =
     '<form class="search-form" action="_tipue_results.html">' +
     '<div class="search-input"><input type="text" name="q" id="tipue_search_input"></div>' +
     '<div class="search-button"><input type="button" id="tipue_search_button" onclick="this.form.submit();"></div>' +
     '</form>' + LineEnding +
-    '<div style="clear: both"></div>';
+    '<div style="clear: both"></div>' + LineEnding +
+    LineEnding +
+    '<script>' + LineEnding +
+    '$(document).ready(function() {' + LineEnding +
+    '    $(''#tipue_search_input'').tipuesearch({' + LineEnding +
+    '        /* 10 items to display seems standard */' + LineEnding +
+    '        ''show'': 10,' + LineEnding +
+    '        /* For PasDoc docs, showing urls is not very useful,' + LineEnding +
+    '           since the page title already shows the unit and identifier. */' + LineEnding +
+    '        ''showURL'': false' + LineEnding +
+    '    });' + LineEnding +
+    '});' + LineEnding +
+    '</script>' + LineEnding;
+
 
 { Adds some additional files to html documentation, needed for tipue engine.
 
@@ -40,7 +73,13 @@ uses Classes, SysUtils;
 
 function TipueSearchButtonHead: string;
 begin
-  Result := '<link rel="stylesheet" type="text/css" href="tipuesearch/tipuesearch.css">';
+  Result :=
+    // Note that we use local jquery copy, not from google, to work offline
+    '<script type="text/javascript" src="tipuesearch/jquery.min.js"></script>' + LineEnding +
+    '<script type="text/javascript" src="tipuesearch/tipuesearch_data.js"></script>' + LineEnding +
+    '<link rel="stylesheet" type="text/css" href="tipuesearch/tipuesearch.css">' + LineEnding +
+    '<script type="text/javascript" src="tipuesearch/tipuesearch_set.js"></script>' + LineEnding +
+    '<script type="text/javascript" src="tipuesearch/tipuesearch.js"></script>' + LineEnding;
 end;
 
 procedure TipueAddFiles(Units: TPasUnits;
@@ -198,19 +237,20 @@ procedure TipueAddFiles(Units: TPasUnits;
   end;
 
 const
-  TipueSearchCss = {$I tipuesearch.css.inc};
-  TipueSearchScript = {$I tipuesearch.js.inc};
-  TipueSearchSetScript = {$I tipuesearch_set.js.inc};
-  JQueryScript = {$I jquery-1.7.1.min.js.inc};
-  TipueSearchImage : {$I search.gif.inc};
+  TipueSearchCss: {$I tipuesearch.css.inc};
+  TipueSearchScript: {$I tipuesearch.js.inc};
+  TipueSearchSetScript: {$I tipuesearch_set.js.inc};
+  JQueryScript: {$I jquery.min.js.inc};
+  TipueSearchImage: {$I search.png.inc};
+  TipueLoaderImage: {$I loader.gif.inc};
 var
   TipueResultsPage: string;
 begin
   CreateDir(OutputPath + 'tipuesearch');
-  StringToFile(OutputPath + 'tipuesearch' + PathDelim + 'tipuesearch.css', TipueSearchCss);
-  StringToFile(OutputPath + 'tipuesearch' + PathDelim + 'tipuesearch.js', TipueSearchScript);
-  StringToFile(OutputPath + 'tipuesearch' + PathDelim + 'tipuesearch_set.js', TipueSearchSetScript);
-  StringToFile(OutputPath + 'tipuesearch' + PathDelim + 'jquery-1.7.1.min.js', JQueryScript);
+  DataToFile(OutputPath + 'tipuesearch' + PathDelim + 'tipuesearch.css', TipueSearchCss);
+  DataToFile(OutputPath + 'tipuesearch' + PathDelim + 'tipuesearch.js', TipueSearchScript);
+  DataToFile(OutputPath + 'tipuesearch' + PathDelim + 'tipuesearch_set.js', TipueSearchSetScript);
+  DataToFile(OutputPath + 'tipuesearch' + PathDelim + 'jquery.min.js', JQueryScript);
 
   TipueResultsPage := {$I _tipue_results.html.inc};
   TipueResultsPage := StringReplace(TipueResultsPage, '###-PASDOC-HEAD-###', Head, []);
@@ -218,7 +258,8 @@ begin
   TipueResultsPage := StringReplace(TipueResultsPage, '###-PASDOC-BODY-END-###', BodyEnd, []);
   StringToFile(OutputPath + '_tipue_results.html', TipueResultsPage);
 
-  DataToFile(OutputPath + 'tipuesearch' + PathDelim + 'search.gif', TipueSearchImage);
+  DataToFile(OutputPath + 'tipuesearch' + PathDelim + 'search.png', TipueSearchImage);
+  DataToFile(OutputPath + 'tipuesearch' + PathDelim + 'loader.gif', TipueLoaderImage);
   WriteTipueIndexData(OutputPath + 'tipuesearch' + PathDelim + 'tipuesearch_data.js');
 end;
 
